@@ -7,7 +7,7 @@ public class AdminFacade implements CouponClientFacade {
 	private CompanyDBDAO companyDBDAO = new CompanyDBDAO();
 
 	private Coupon coupon;
-	private Company company;
+	private Company company;/// yuyuytytyry
 	private Customer customer;
 
 	// public AdminFacade(Coupon coupon) {
