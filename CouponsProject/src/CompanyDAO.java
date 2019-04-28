@@ -15,4 +15,6 @@ public interface CompanyDAO {
 
 	Set<Coupon> getAllCoupons(long id) throws Exception;
 
+	boolean login(String compName, String password) throws Exception;
+
 }

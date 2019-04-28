@@ -136,4 +136,26 @@ public class CompanyDBDAO implements CompanyDAO {
 		return null;
 	}
 
+	@Override
+	public boolean login(String compName, String password) throws Exception {
+		boolean loginSuccess = false;
+
+		try {
+			String query = "SELECT * FROM Companies WHERE COMP_NAME=? AND PASSWORD=?";
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			pstmt.setString(1, compName);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				loginSuccess = true;
+			}
+		} catch (Exception e) {
+
+			System.out.println(e);
+		} finally {
+			this.con.close();
+		}
+		return loginSuccess;
+	}
+
 }

@@ -3,6 +3,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
+	private static Database instance = new Database();
+
+	public static Database getInstance() {
+		return instance;
+	}
 
 	public static String getDriverData() {
 		return "org.apache.derby.jdbc.ClientDriver";
