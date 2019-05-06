@@ -114,4 +114,26 @@ public class CustomerDBDAO implements CustomerDAO {
 		return null;
 	}
 
+	@Override
+	public boolean login(String custName, String password) throws Exception {
+		boolean loginStatus = false;
+
+		try {
+			String query = "SELECT * FROM Companies WHERE COMP_NAME=? AND PASSWORD=?";
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			pstmt.setString(1, custName);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				loginStatus = true;
+			}
+		} catch (Exception e) {
+
+			System.out.println(e);
+		} finally {
+			this.con.close();
+		}
+		return loginStatus;
+	}
+
 }

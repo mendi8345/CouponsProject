@@ -1,7 +1,7 @@
 import java.sql.Date;
 import java.util.Set;
 
-public class CustomerFacade {
+public class CustomerFacade implements CouponClientFacade {
 
 	private CustomerDAO customerDAO = new CustomerDBDAO();
 	private CouponDAO couponDAO = new CouponDBDAO();
@@ -39,5 +39,11 @@ public class CustomerFacade {
 	public Set<Coupon> getAllCoupons() throws Exception {
 		return this.customerDAO.getAllCoupons(this.getCustomer().getId());
 
+	}
+
+	@Override
+	public CouponClientFacade login(String name, String password, ClientType clientType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

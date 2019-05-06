@@ -147,4 +147,35 @@ public class CouponDBDAO implements CouponDAO {
 		return set;
 	}
 
+	@Override
+	public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
+		try {
+
+			String query = "SELECT * FROM Coupons WHERE TYPE=?";
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			pstmt.setString(1, couponType.toString());
+			ResultSet rs = pstmt.executeQuery();
+			Coupon coupon = null;
+			while (rs.next()) {
+				coupon.setId(rs.getLong(1));
+				coupon.setTitle(rs.getString(2));
+				coupon.setStartDate(rs.getDate(3));
+				coupon.setEndDate(rs.getDate(4));
+				coupon.setAmount(rs.getInt(5));
+				coupon.setMessege(rs.getString(6));
+				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
+				coupon.setPrice(rs.getDouble(8));
+				coupon.setImage(rs.getString(9));
+
+			}
+			pstmt.close();
+
+		} catch (SQLException e) {
+			throw new Exception(e);
+		} finally {
+			this.con.close();
+		}
+		return getCouponsByType(couponType);
+	}
+
 }

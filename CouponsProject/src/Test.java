@@ -39,7 +39,8 @@ public class Test {
 		System.out.println("----------------------------------- table coupon -----------------------------------");
 		Coupon coupon = new Coupon(1, "gd", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 2, "electric",
 				CouponType.food, 5.0, "gggg");
-
+		CompanyFacade companyFacade = new CompanyFacade(company1);
+		System.out.println(company1);
 		// adminFacade.insertCoupon(coupon);
 		// couponDBDAO.removeCoupon(coupon);
 		// System.out.println("get 1 company============= " +

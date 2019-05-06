@@ -138,7 +138,7 @@ public class CompanyDBDAO implements CompanyDAO {
 
 	@Override
 	public boolean login(String compName, String password) throws Exception {
-		boolean loginSuccess = false;
+		boolean loginStatus = false;
 
 		try {
 			String query = "SELECT * FROM Companies WHERE COMP_NAME=? AND PASSWORD=?";
@@ -147,7 +147,7 @@ public class CompanyDBDAO implements CompanyDAO {
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				loginSuccess = true;
+				loginStatus = true;
 			}
 		} catch (Exception e) {
 
@@ -155,7 +155,7 @@ public class CompanyDBDAO implements CompanyDAO {
 		} finally {
 			this.con.close();
 		}
-		return loginSuccess;
+		return loginStatus;
 	}
 
 }

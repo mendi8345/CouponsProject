@@ -14,4 +14,6 @@ public interface CustomerDAO {
 
 	Set<Coupon> getAllCoupons(long id);
 
+	boolean login(String custName, String password) throws Exception;
+
 }
