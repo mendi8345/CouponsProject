@@ -19,6 +19,7 @@ public class CompanyFacade implements CouponClientFacade {
 	}
 
 	public void insertCoupon(Coupon coupon) throws Exception {
+
 		this.couponDAO.insertCoupon(coupon);
 	}
 
@@ -37,10 +38,16 @@ public class CompanyFacade implements CouponClientFacade {
 
 	}
 
-	public Set<Coupon> getAllCoupons() throws Exception {
-		return this.companyDAO.getAllCoupons(this.getCompany().getId());
+	public Set<Coupon> getCompCoupons() throws Exception {
+		return this.companyDAO.getCompCoupons(this.getCompany().getId());
 
 	}
+	//
+	// public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
+	// Set<Coupon> allCoupons = this.getCompCoupons()Coupons();
+	// return this.allC;
+	//
+	// }
 
 	@Override
 	public CouponClientFacade login(String name, String password, ClientType clientType) {

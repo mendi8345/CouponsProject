@@ -109,17 +109,11 @@ public class CustomerDBDAO implements CustomerDAO {
 	}
 
 	@Override
-	public Set<Coupon> getAllCoupons(long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean login(String custName, String password) throws Exception {
 		boolean loginStatus = false;
 
 		try {
-			String query = "SELECT * FROM Companies WHERE COMP_NAME=? AND PASSWORD=?";
+			String query = "SELECT * FROM Companies WHERE custName=? AND password=?";
 			PreparedStatement pstmt = this.con.prepareStatement(query);
 			pstmt.setString(1, custName);
 			pstmt.setString(2, password);
@@ -134,6 +128,67 @@ public class CustomerDBDAO implements CustomerDAO {
 			this.con.close();
 		}
 		return loginStatus;
+	}
+
+	@Override
+	public Set<Coupon> getCustCoupons(Customer customer) throws Exception {
+		Set<Coupon> set = new HashSet<Coupon>();
+
+		try {
+			String query = "SELECT * FROM Coupon as c " + "JOIN Customer_Coupon cc " + "ON c.ID = cc.COUPON_ID "
+					+ "WHERE cc.CUST_ID = ?";
+
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			pstmt.setLong(1, customer.getId());
+			ResultSet rs = pstmt.executeQuery();
+			Coupon coupon = null;
+
+			while (rs.next()) {
+
+				coupon = new Coupon();
+				coupon = new Coupon();
+				coupon.setId(rs.getLong("ID"));
+				coupon.setTitle(rs.getString("TITLE"));
+				coupon.setStartDate(rs.getDate("START_DATE"));
+				coupon.setEndDate(rs.getDate("END_DATE"));
+				coupon.setAmount(rs.getInt("AMOUNT"));
+				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
+				coupon.setPrice(rs.getDouble("PRICE"));
+				coupon.setImage(rs.getString("IMAGE"));
+
+				set.add(coupon);
+
+			}
+
+			pstmt.close();
+		} catch (SQLException e) {
+			throw new Exception("unable to get CustCoupons data");
+		} finally {
+			this.con.close();
+		}
+		return set;
+
+	}
+
+	@Override
+	public void associateCouponToCustomer(Coupon coupon, Customer customer) throws Exception {
+
+		try {
+			String query = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?, ?)";
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			pstmt.setLong(1, customer.getId());
+			pstmt.setLong(2, coupon.getId());
+			pstmt.executeUpdate();
+
+			pstmt.close();
+
+		} catch (SQLException e) {
+
+			throw new Exception(e);
+		} finally {
+			this.con.close();
+
+		}
 	}
 
 }

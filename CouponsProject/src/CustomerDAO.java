@@ -12,8 +12,10 @@ public interface CustomerDAO {
 
 	Set<Customer> getAllCustomer() throws Exception;
 
-	Set<Coupon> getAllCoupons(long id);
+	Set<Coupon> getCustCoupons(Customer customer) throws Exception;
 
 	boolean login(String custName, String password) throws Exception;
+
+	void associateCouponToCustomer(Coupon coupon, Customer customer) throws Exception;
 
 }

@@ -7,7 +7,7 @@ public class Company {
 	private String compName;
 	private String password;
 	private String email;
-	private Set<Coupon> set = new HashSet<>();
+	private Set<Coupon> set = new HashSet<Coupon>();
 
 	public Company(long id, String compName, String password, String email) {
 		this.id = id;

@@ -20,8 +20,6 @@ public class Test {
 		Company company2 = new Company(2, "dominos", "2345", "dominos@java.com");
 		Company company3 = new Company(3, "rami levi", "6789", "ramilevi@java.com");
 
-		// CompanyFacade companyFacade = new CompanyFacade();
-
 		adminFacade.insertCompany(company1);
 		adminFacade.insertCompany(company2);
 		adminFacade.insertCompany(company3);
@@ -40,7 +38,7 @@ public class Test {
 		Coupon coupon = new Coupon(1, "gd", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 2, "electric",
 				CouponType.food, 5.0, "gggg");
 		CompanyFacade companyFacade = new CompanyFacade(company1);
-		System.out.println(company1);
+		System.out.println(companyFacade);
 		// adminFacade.insertCoupon(coupon);
 		// couponDBDAO.removeCoupon(coupon);
 		// System.out.println("get 1 company============= " +

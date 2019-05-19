@@ -61,31 +61,28 @@ public class CouponDBDAO implements CouponDAO {
 	}
 
 	@Override
-	public void updateCoupon(Coupon coupon, long id, String title, Date startDate, Date endDate, int amount,
-			String messege, CouponType couponType, double price, String image) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
-		coupon.setId(id);
-		coupon.setTitle(title);
-		coupon.setStartDate(startDate);
-		coupon.setEndDate(endDate);
-		coupon.setAmount(amount);
-		coupon.setMessege(messege);
-		coupon.setCouponType(couponType);
-		coupon.setPrice(price);
-		coupon.setImage(image);
+	public void updateCoupon(Coupon coupon) throws Exception {
 
-		try (Statement stm = this.con.createStatement()) {
-			String sql = "UPDATE Coupon " + " SET title='" + coupon.getTitle() + "',  startDate='"
-					+ coupon.getStartDate() + "', endDate='" + coupon.getEndDate() + "', amount='" + coupon.getAmount()
-					+ "', messege='" + coupon.getMessege() + "', couponType='" + coupon.getCouponType() + "', price='"
-					+ coupon.getPrice() + "', image='" + coupon.getImage() + "' WHERE ID=" + coupon.getId();
+		try {
+			String query = "UPDATE Coupons SET END_DATE=?, PRICE=?, AMOUNT=?, MESSAGE=?, IMAGE=?, ISACTIVE=? WHERE ID=?";
 
-			stm.executeUpdate(sql);
-			System.out.println(coupon.toString());
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+
+			pstmt.setDate(1, coupon.getEndDate());
+			pstmt.setDouble(2, coupon.getPrice());
+			pstmt.setInt(3, coupon.getAmount());
+			pstmt.setString(4, coupon.getImage());
+			pstmt.setLong(5, coupon.getId());
+
+			pstmt.executeUpdate();
+			pstmt.close();
+
 		} catch (SQLException e) {
-			throw new Exception("update Coupon failed");
-		}
 
+			throw new Exception(e);
+		} finally {
+
+		}
 	}
 
 	@Override

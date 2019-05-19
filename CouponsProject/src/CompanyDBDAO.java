@@ -11,7 +11,9 @@ import java.util.Set;
 public class CompanyDBDAO implements CompanyDAO {
 	Connection con;
 	Object set;
-	private Set<Company> companys;
+	private Set<Company> allCompanies;
+
+	Company_Coupon company_coupon = new Company_Coupon();
 
 	@Override
 	public void insertCompany(Company company) throws Exception {
@@ -84,7 +86,7 @@ public class CompanyDBDAO implements CompanyDAO {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 		Company company = new Company();
 		try (Statement stm = this.con.createStatement()) {
-			String sql = "SELECT * FROM Company WHERE ID=" + id;
+			String sql = "SELECT * FROM Company WHERE ID=?";
 
 			ResultSet rs = stm.executeQuery(sql);
 			rs.next();
@@ -109,9 +111,9 @@ public class CompanyDBDAO implements CompanyDAO {
 	@Override
 	public Set<Company> getAllCompany() throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		Set<Company> set = new HashSet<>();
-		String sql = "SELECT * FROM Company";
+		Set<Company> allCompanies = new HashSet<Company>();
 
+		String sql = "SELECT * FROM Company";
 		try (Statement stm = this.con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
 			while (rs.next()) {
 				long id = rs.getLong(1);
@@ -119,7 +121,8 @@ public class CompanyDBDAO implements CompanyDAO {
 				String password = rs.getString(3);
 				String email = rs.getString(4);
 
-				set.add(new Company(id, compName, password, email));
+				allCompanies.add(new Company(id, compName, password, email));
+
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -127,13 +130,45 @@ public class CompanyDBDAO implements CompanyDAO {
 		} finally {
 			this.con.close();
 		}
-		return set;
+		return this.allCompanies;
+
 	}
 
 	@Override
-	public Set<Coupon> getAllCoupons(long id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Coupon> getCompCoupons(long comp_id) throws Exception {
+		Set<Coupon> coupons = new HashSet<Coupon>();
+
+		try {
+			this.con = ConnectionPool.getInstance().getConnection();
+		} catch (Exception e) {
+			throw new Exception("cannot get Company data");
+
+		}
+
+		try {
+			String query = "SELECT * FROM Company_Coupon WHERE comp_id=?";
+			PreparedStatement pstmt = this.con.prepareStatement(query);
+			ResultSet rs = pstmt.executeQuery();
+			Coupon coupon = null;
+			while (rs.next()) {
+				pstmt.setLong(1, comp_id);
+				coupon.setId(rs.getLong("ID"));
+				coupon.setTitle(rs.getString("TITLE"));
+				coupon.setStartDate(rs.getDate("START_DATE"));
+				coupon.setEndDate(rs.getDate("END_DATE"));
+				coupon.setAmount(rs.getInt("AMOUNT"));
+				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
+				coupon.setPrice(rs.getDouble("PRICE"));
+				coupon.setImage(rs.getString("IMAGE"));
+				coupons.add(coupon);
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			throw new Exception(e);
+		} finally {
+			ConnectionPool.getInstance().returnConnection(this.con);
+		}
+		return coupons;
 	}
 
 	@Override
