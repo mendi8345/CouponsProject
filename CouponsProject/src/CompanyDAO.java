@@ -7,7 +7,7 @@ public interface CompanyDAO {
 
 	void removeCompany(Company company) throws Exception;
 
-	void updateCompany(Company company, long id, String compName, String password, String email) throws Exception;
+	void updateCompany(Company company) throws Exception;
 
 	Company getCompany(long id) throws Exception;
 

@@ -15,8 +15,6 @@ public class CustomerFacade implements CouponClientFacade {
 
 	public void purchaseCoupon(Coupon coupon) throws Exception {
 
-		// getting real time coupon amount from DB
-
 		Coupon couponData = this.couponDAO.getCoupon(coupon.getId());
 
 		if (couponData == null) {

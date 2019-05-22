@@ -1,5 +1,4 @@
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,14 +8,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CouponDBDAO implements CouponDAO {
+
 	Connection con;
 
 	@Override
-	public void insertCoupon(Coupon coupon) throws Exception {
+
+	public void insertCoupon(Company company, Coupon coupon) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 		String sql = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
 
-		try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
+		try {
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
 
 			pstmt.setString(1, coupon.getTitle());
 			pstmt.setDate(2, coupon.getStartDate());
@@ -25,10 +27,33 @@ public class CouponDBDAO implements CouponDAO {
 			pstmt.setString(5, coupon.getMessege());
 			pstmt.setString(6, coupon.getCouponType().name());
 			pstmt.setDouble(7, coupon.getPrice());
-			pstmt.setString(8, coupon.getImage());
-			pstmt.executeUpdate();
 
-			System.out.println("Coupon created" + coupon.toString());
+			pstmt.setString(8, coupon.getImage());
+
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			long id = 0;
+			sql = "SELECT ID FROM Coupon WHERE TITLE=?";
+			pstmt = this.con.prepareStatement(sql);
+			pstmt.setString(1, coupon.getTitle());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				id = rs.getLong("ID");
+			}
+
+			System.out.println("Coupon created  " + coupon.toString());
+			sql = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
+			pstmt = this.con.prepareStatement(sql);
+			pstmt.setLong(1, company.getId());
+			pstmt.setLong(2, id);
+			System.out.println("11111111111");
+
+			pstmt.executeUpdate();
+			System.out.println("hsfhsghfghsgdfds");
+
+			pstmt.close();
+
 		} catch (SQLException e) {
 			throw new Exception("Coupons insert failed");
 		} finally {
@@ -72,7 +97,9 @@ public class CouponDBDAO implements CouponDAO {
 			pstmt.setDouble(2, coupon.getPrice());
 			pstmt.setInt(3, coupon.getAmount());
 			pstmt.setString(4, coupon.getImage());
-			pstmt.setLong(5, coupon.getId());
+
+			pstmt.setString(5, coupon.getMessege());
+			pstmt.setLong(6, coupon.getId());
 
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -89,9 +116,13 @@ public class CouponDBDAO implements CouponDAO {
 	public Coupon getCoupon(long id) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 		Coupon coupon = new Coupon();
+
 		try (Statement stm = this.con.createStatement()) {
-			String sql = "SELECT id FROM Coupon WHERE ID=" + id;
+			String sql = "SELECT * FROM Coupon WHERE ID=" + id;
+
 			ResultSet rs = stm.executeQuery(sql);
+			System.out.println("getCoupon.test 1");
+
 			rs.next();
 
 			coupon.setId(rs.getLong(1));
@@ -115,7 +146,7 @@ public class CouponDBDAO implements CouponDAO {
 	@Override
 	public Set<Coupon> getAllCoupons() throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		Set<Coupon> set = new HashSet<>();
+		Set<Coupon> set = new HashSet<Coupon>();
 
 		try {
 			Statement stm = this.con.createStatement();
@@ -123,17 +154,19 @@ public class CouponDBDAO implements CouponDAO {
 			ResultSet rs = stm.executeQuery(sql);
 
 			while (rs.next()) {
-				long id = rs.getLong(1);
-				String title = rs.getString(2);
-				Date startDate = rs.getDate(3);
-				Date endDate = rs.getDate(4);
-				int amount = rs.getInt(5);
-				String messege = rs.getString(6);
-				CouponType couponType = CouponType.valueOf(rs.getString("CouponType"));
-				double price = rs.getDouble(8);
-				String image = rs.getString(9);
+				Coupon coupon = new Coupon();
 
-				set.add(new Coupon(id, title, startDate, endDate, amount, messege, couponType, price, image));
+				coupon.setId(rs.getLong(1));
+				coupon.setTitle(rs.getString(2));
+				coupon.setStartDate(rs.getDate(3));
+				coupon.setEndDate(rs.getDate(4));
+				coupon.setAmount(rs.getInt(5));
+				coupon.setMessege(rs.getString(6));
+				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
+				coupon.setPrice(rs.getDouble(8));
+				coupon.setImage(rs.getString(9));
+
+				set.add(coupon);
 			}
 		} catch (SQLException e) {
 			System.out.println(e);

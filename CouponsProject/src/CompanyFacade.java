@@ -1,9 +1,10 @@
 
-import java.sql.Date;
+import java.sql.Connection;
 import java.util.Set;
 
 public class CompanyFacade implements CouponClientFacade {
 
+	Connection con;
 	private CompanyDAO companyDAO = new CompanyDBDAO();
 	private CouponDAO couponDAO = new CouponDBDAO();
 
@@ -18,9 +19,9 @@ public class CompanyFacade implements CouponClientFacade {
 		this.company = company;
 	}
 
-	public void insertCoupon(Coupon coupon) throws Exception {
+	public void createCoupon(Coupon coupon) throws Exception {
 
-		this.couponDAO.insertCoupon(coupon);
+		this.couponDAO.insertCoupon(this.company, coupon);
 	}
 
 	public void removeCoupon(Coupon coupon) throws Exception {
@@ -28,9 +29,8 @@ public class CompanyFacade implements CouponClientFacade {
 
 	}
 
-	public void updateCoupon(Coupon coupon, long id, String title, Date startDate, Date endDate, int amount,
-			String messege, CouponType couponType, double price, String image) throws Exception {
-		this.couponDAO.insertCoupon(coupon);
+	public void updateCoupon(Coupon coupon) throws Exception {
+		this.couponDAO.updateCoupon(coupon);
 	}
 
 	public Coupon getCoupon(long id) throws Exception {

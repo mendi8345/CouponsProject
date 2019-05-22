@@ -113,8 +113,8 @@ public class CustomerDBDAO implements CustomerDAO {
 		boolean loginStatus = false;
 
 		try {
-			String query = "SELECT * FROM Companies WHERE custName=? AND password=?";
-			PreparedStatement pstmt = this.con.prepareStatement(query);
+			String sql = "SELECT * FROM Customer WHERE custName=? AND password=?";
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
 			pstmt.setString(1, custName);
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
@@ -135,10 +135,13 @@ public class CustomerDBDAO implements CustomerDAO {
 		Set<Coupon> set = new HashSet<Coupon>();
 
 		try {
-			String query = "SELECT * FROM Coupon as c " + "JOIN Customer_Coupon cc " + "ON c.ID = cc.COUPON_ID "
+			System.out.println(" getCustCoupons test 1*");
+			String sql = "SELECT * FROM Coupon as c " + "JOIN Customer_Coupon cc " + "ON c.ID = cc.COUPON_ID "
 					+ "WHERE cc.CUST_ID = ?";
 
-			PreparedStatement pstmt = this.con.prepareStatement(query);
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			System.out.println(" getCustCoupons test 2*");
+
 			pstmt.setLong(1, customer.getId());
 			ResultSet rs = pstmt.executeQuery();
 			Coupon coupon = null;
@@ -152,6 +155,7 @@ public class CustomerDBDAO implements CustomerDAO {
 				coupon.setStartDate(rs.getDate("START_DATE"));
 				coupon.setEndDate(rs.getDate("END_DATE"));
 				coupon.setAmount(rs.getInt("AMOUNT"));
+				coupon.setMessege(rs.getString("messege"));
 				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
 				coupon.setPrice(rs.getDouble("PRICE"));
 				coupon.setImage(rs.getString("IMAGE"));
@@ -174,8 +178,8 @@ public class CustomerDBDAO implements CustomerDAO {
 	public void associateCouponToCustomer(Coupon coupon, Customer customer) throws Exception {
 
 		try {
-			String query = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?, ?)";
-			PreparedStatement pstmt = this.con.prepareStatement(query);
+			String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
 			pstmt.setLong(1, customer.getId());
 			pstmt.setLong(2, coupon.getId());
 			pstmt.executeUpdate();

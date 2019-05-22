@@ -28,14 +28,9 @@ public class AdminFacade implements CouponClientFacade {
 		this.companyDBDAO.removeCompany(company);
 	}
 
-	public void updateCompany(Company company, long id, String compName, String password, String email)
-			throws Exception {
-		company.setId(id);
-		company.setCompName(compName);
-		company.setPassword(password);
-		company.setEmail(email);
+	public void updateCompany(Company company) throws Exception {
 
-		this.companyDBDAO.updateCompany(company, id, compName, password, email);
+		this.companyDBDAO.updateCompany(company);
 	}
 
 	public Company getCompany(long id) {

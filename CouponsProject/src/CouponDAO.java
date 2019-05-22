@@ -3,7 +3,7 @@ import java.util.Set;
 
 public interface CouponDAO {
 
-	void insertCoupon(Coupon coupon) throws Exception;
+	void insertCoupon(Company company, Coupon coupon) throws Exception;
 
 	void removeCoupon(Coupon coupon) throws Exception;
 
@@ -14,4 +14,5 @@ public interface CouponDAO {
 	Set<Coupon> getAllCoupons() throws Exception;
 
 	Set<Coupon> getCouponsByType(CouponType couponType) throws Exception;
+
 }

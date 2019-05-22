@@ -112,7 +112,7 @@ public class Database {
 		try {
 
 			sqlCompany_Coupon = "create table Company_Coupon(" + "comp_id integer not null references Company(id), "
-					+ "coupon_id integer not null references Coupon(id), " + "primary key(comp_id, coupon_id))";
+					+ "coupon_id integer not null references Coupon(id))";
 			stmt.executeUpdate(sqlCompany_Coupon);
 
 			System.out.println("success:" + sqlCompany_Coupon);

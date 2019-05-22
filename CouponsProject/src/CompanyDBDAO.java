@@ -61,22 +61,23 @@ public class CompanyDBDAO implements CompanyDAO {
 	}
 
 	@Override
-	public void updateCompany(Company company, long id, String compName, String password, String email)
-			throws Exception {
+	public void updateCompany(Company company) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		// company.setId(id);
-		// company.setCompName(compName);
-		// company.setPassword(password);
-		// company.setEmail(email);
 
-		try (Statement stm = this.con.createStatement()) {
+		try {
 			String sql = "UPDATE Company " + " SET compName='" + company.getCompName() + "', password='"
 					+ company.getPassword() + "', email='" + company.getEmail() + "' WHERE ID=" + company.getId();
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			pstmt.setString(1, company.getCompName());
+			pstmt.setString(2, company.getPassword());
+			pstmt.setString(2, company.getEmail());
 
-			stm.executeUpdate(sql);
+			pstmt.executeUpdate(sql);
 			System.out.println(company.toString());
 		} catch (SQLException e) {
 			throw new Exception("update Company failed");
+		} finally {
+			this.con.close();
 		}
 
 	}
