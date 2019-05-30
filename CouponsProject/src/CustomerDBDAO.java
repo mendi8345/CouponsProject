@@ -9,6 +9,7 @@ import java.util.Set;
 
 public class CustomerDBDAO implements CustomerDAO {
 	Connection con;
+	Customer customer;
 
 	@Override
 	public void insertCustomer(Customer customer) throws Exception {
@@ -53,17 +54,24 @@ public class CustomerDBDAO implements CustomerDAO {
 	}
 
 	@Override
-	public void updateCustomer(Customer customer, long id, String custName, String password) throws Exception {
+	public void updateCustomer(Customer customer) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
+		String sql = "UPDATE Customer SET custName=?, password=?";
 
-		try (Statement stm = this.con.createStatement()) {
-			String sql = "UPDATE Customer " + " SET name='" + customer.getCustName() + "', password='"
-					+ customer.getPassword();
-			stm.executeUpdate(sql);
+		try {
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			pstmt.setString(1, customer.getCustName());
+			pstmt.setString(2, customer.getPassword());
+			pstmt.executeUpdate(sql);
+			pstmt.close();
+
 		} catch (SQLException e) {
-			throw new Exception("update Customer failed");
-		}
 
+			throw new Exception("update Customer failed");
+		} finally {
+			this.con.close();
+
+		}
 	}
 
 	@Override
@@ -90,15 +98,18 @@ public class CustomerDBDAO implements CustomerDAO {
 	public Set<Customer> getAllCustomer() throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 		Set<Customer> set = new HashSet<>();
-		String sql = "SELECT id FROM Customer";
-		try (Statement stm = this.con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
+		String sql = "SELECT * FROM Customer";
+		try (Statement stm = this.con.createStatement()) {
+			ResultSet rs = stm.executeQuery(sql);
 			while (rs.next()) {
-				int id = rs.getInt(1);
-				String custName = rs.getString(1);
-				String password = rs.getString(1);
+				Customer customer = new Customer();
+				customer.setId(rs.getLong(1));
+				customer.setCustName(rs.getString(2));
+				customer.setPassword(rs.getString(3));
 
-				set.add(new Customer(id, custName, password));
+				set.add(customer);
 			}
+
 		} catch (SQLException e) {
 			System.out.println(e);
 			throw new Exception("cannot get Customer data");
@@ -111,6 +122,7 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public boolean login(String custName, String password) throws Exception {
 		boolean loginStatus = false;
+		this.con = DriverManager.getConnection(Database.getDBUrl());
 
 		try {
 			String sql = "SELECT * FROM Customer WHERE custName=? AND password=?";
@@ -133,32 +145,29 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public Set<Coupon> getCustCoupons(Customer customer) throws Exception {
 		Set<Coupon> set = new HashSet<Coupon>();
-
+		this.con = DriverManager.getConnection(Database.getDBUrl());
+		System.out.println("getCustCoupons test 1");
 		try {
-			System.out.println(" getCustCoupons test 1*");
 			String sql = "SELECT * FROM Coupon as c " + "JOIN Customer_Coupon cc " + "ON c.ID = cc.COUPON_ID "
 					+ "WHERE cc.CUST_ID = ?";
 
 			PreparedStatement pstmt = this.con.prepareStatement(sql);
-			System.out.println(" getCustCoupons test 2*");
-
 			pstmt.setLong(1, customer.getId());
 			ResultSet rs = pstmt.executeQuery();
-			Coupon coupon = null;
 
 			while (rs.next()) {
 
-				coupon = new Coupon();
-				coupon = new Coupon();
+				Coupon coupon = new Coupon();
+
 				coupon.setId(rs.getLong("ID"));
-				coupon.setTitle(rs.getString("TITLE"));
-				coupon.setStartDate(rs.getDate("START_DATE"));
-				coupon.setEndDate(rs.getDate("END_DATE"));
-				coupon.setAmount(rs.getInt("AMOUNT"));
-				coupon.setMessege(rs.getString("messege"));
+				coupon.setTitle(rs.getString("Title"));
+				coupon.setStartDate(rs.getDate("StartDate"));
+				coupon.setEndDate(rs.getDate("endDate"));
+				coupon.setAmount(rs.getInt("Amount"));
+				coupon.setMessege(rs.getString("Messege"));
 				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
-				coupon.setPrice(rs.getDouble("PRICE"));
-				coupon.setImage(rs.getString("IMAGE"));
+				coupon.setPrice(rs.getDouble("Price"));
+				coupon.setImage(rs.getString("Image"));
 
 				set.add(coupon);
 
@@ -167,15 +176,14 @@ public class CustomerDBDAO implements CustomerDAO {
 			pstmt.close();
 		} catch (SQLException e) {
 			throw new Exception("unable to get CustCoupons data");
-		} finally {
-			this.con.close();
 		}
 		return set;
 
 	}
 
 	@Override
-	public void associateCouponToCustomer(Coupon coupon, Customer customer) throws Exception {
+	public void associateCouponToCustomer(Customer customer, Coupon coupon) throws Exception {
+		this.con = DriverManager.getConnection(Database.getDBUrl());
 
 		try {
 			String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
@@ -188,9 +196,8 @@ public class CustomerDBDAO implements CustomerDAO {
 
 		} catch (SQLException e) {
 
-			throw new Exception(e);
+			System.out.println("Unable to drop tables");
 		} finally {
-			this.con.close();
 
 		}
 	}

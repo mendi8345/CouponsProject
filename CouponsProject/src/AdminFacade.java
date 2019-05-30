@@ -2,12 +2,12 @@ import java.util.Set;
 
 public class AdminFacade implements CouponClientFacade {
 
-	private CouponDBDAO couponDBDAO = new CouponDBDAO();
-	private CustomerDBDAO customerDBDAO = new CustomerDBDAO();
-	private CompanyDBDAO companyDBDAO = new CompanyDBDAO();
+	private CouponDAO couponDAO = new CouponDBDAO();
+	private CustomerDAO customerDAO = new CustomerDBDAO();
+	private CompanyDAO companyDAO = new CompanyDBDAO();
 
 	private Coupon coupon;
-	private Company company;/// yuyuytytyr
+	private Company company;
 	private Customer customer;
 
 	// public AdminFacade(Coupon coupon) {
@@ -20,17 +20,17 @@ public class AdminFacade implements CouponClientFacade {
 
 	}
 
-	public void insertCompany(Company company) throws Exception {
-		this.companyDBDAO.insertCompany(company);
+	public void createCompany(Company company) throws Exception {
+		this.companyDAO.insertCompany(company);
 	}
 
 	public void removeCompany(Company company) throws Exception {
-		this.companyDBDAO.removeCompany(company);
+		this.companyDAO.removeCompany(company);
 	}
 
 	public void updateCompany(Company company) throws Exception {
 
-		this.companyDBDAO.updateCompany(company);
+		this.companyDAO.updateCompany(company);
 	}
 
 	public Company getCompany(long id) {
@@ -39,21 +39,19 @@ public class AdminFacade implements CouponClientFacade {
 
 	public Set<Company> getAllCompany() throws Exception {
 		// CompanyDBDAO companyDAO=new CompanyDBDAO();
-		return this.companyDBDAO.getAllCompany();
+		return this.companyDAO.getAllCompany();
 	}
 
 	public void insertCustomer(Customer customer) throws Exception {
-		this.customerDBDAO.insertCustomer(customer);
+		this.customerDAO.insertCustomer(customer);
 	}
 
 	public void removeCustomer(Customer customer) throws Exception {
-		this.customerDBDAO.removeCustomer(customer);
+		this.customerDAO.removeCustomer(customer);
 	}
 
-	public void updateCustomer(Customer customer, long id, String custName, String password) throws Exception {
-		customer.setCustName(custName);
-		customer.setPassword(password);
-		this.customerDBDAO.updateCustomer(customer, id, custName, password);
+	public void updateCustomer(Customer customer) throws Exception {
+		this.customerDAO.updateCustomer(customer);
 
 	}
 
@@ -63,19 +61,12 @@ public class AdminFacade implements CouponClientFacade {
 
 	public Set<Customer> getAllCustomer() throws Exception {
 		// ProductDBDAO comDAO=new ProductDBDAO();
-		return this.customerDBDAO.getAllCustomer();
+		return this.customerDAO.getAllCustomer();
 	}
 
 	@Override
 	public CouponClientFacade login(String name, String password, ClientType clientType) {
 
-		if (clientType == ClientType.admin) {
-			if ((name == "admin") && (password == "1234")) {
-				AdminFacade adminFacade = new AdminFacade();
-
-				return adminFacade;
-			}
-		}
 		return null;
 
 	}

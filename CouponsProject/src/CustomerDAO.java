@@ -6,7 +6,7 @@ public interface CustomerDAO {
 
 	void removeCustomer(Customer customer) throws Exception;
 
-	void updateCustomer(Customer customer, long id, String custName, String password) throws Exception;
+	void updateCustomer(Customer customer) throws Exception;
 
 	Customer getCustomer(long id) throws Exception;
 
@@ -16,6 +16,6 @@ public interface CustomerDAO {
 
 	boolean login(String custName, String password) throws Exception;
 
-	void associateCouponToCustomer(Coupon coupon, Customer customer) throws Exception;
+	void associateCouponToCustomer(Customer customer, Coupon coupon) throws Exception;
 
 }

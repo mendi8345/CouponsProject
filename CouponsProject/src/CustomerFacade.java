@@ -1,4 +1,3 @@
-import java.util.EmptyStackException;
 import java.util.Set;
 
 public class CustomerFacade implements CouponClientFacade {
@@ -16,23 +15,24 @@ public class CustomerFacade implements CouponClientFacade {
 	public void purchaseCoupon(Coupon coupon) throws Exception {
 
 		Coupon couponData = this.couponDAO.getCoupon(coupon.getId());
+		System.out.println("couponData print" + couponData.toString());
 
 		if (couponData == null) {
-			throw new EmptyStackException();
+			throw new Exception("Coupon does not exist");
 		}
 		if (couponData.getAmount() <= 0) {
 
-			throw new EmptyStackException();
+			throw new Exception("Coupon does not available ");
 		}
 		// and not purchased already
 		if (getAllPurchasedCoupon().contains(couponData)) {
-			throw new EmptyStackException();
+			throw new Exception("Coupon already exist");
 		}
 		// purchase
-		this.customerDAO.associateCouponToCustomer(couponData, this.customer);
+		this.customerDAO.associateCouponToCustomer(this.customer, couponData);
 
 		// decrease amount
-		couponData.setAmount(couponData.getAmount() - 1);
+		couponData.setAmount(couponData.getAmount() + 100);
 		this.couponDAO.updateCoupon(couponData);
 
 	}
@@ -41,8 +41,14 @@ public class CustomerFacade implements CouponClientFacade {
 		return this.customerDAO.getCustCoupons(this.customer);
 	}
 
-	public void getAllPurchasedCouponByType(CouponType couponType) throws Exception {
-
+	public Set<Coupon> getAllPurchasedCouponByType(CouponType couponType) throws Exception {
+		Set<Coupon> allCoupons = this.customerDAO.getCustCoupons(this.customer);
+		for (Coupon c : allCoupons) {
+			if (c.getCouponType() != couponType) {
+				allCoupons.remove(c);
+			}
+		}
+		return allCoupons;
 	}
 
 	public Set<Coupon> getAllPurchasedCouponByPrice(double price) throws Exception {

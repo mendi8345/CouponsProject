@@ -20,7 +20,6 @@ public class CompanyFacade implements CouponClientFacade {
 	}
 
 	public void createCoupon(Coupon coupon) throws Exception {
-
 		this.couponDAO.insertCoupon(this.company, coupon);
 	}
 
@@ -39,15 +38,21 @@ public class CompanyFacade implements CouponClientFacade {
 	}
 
 	public Set<Coupon> getCompCoupons() throws Exception {
-		return this.companyDAO.getCompCoupons(this.getCompany().getId());
+		return this.companyDAO.getCompCoupons(this.company);
 
 	}
-	//
-	// public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
-	// Set<Coupon> allCoupons = this.getCompCoupons()Coupons();
-	// return this.allC;
-	//
-	// }
+
+	public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
+		Set<Coupon> coupons = this.getCompCoupons();
+
+		for (Coupon c : coupons) {
+			if (c.getCouponType() != couponType) {
+				coupons.remove(c);
+			}
+		}
+		return coupons;
+
+	}
 
 	@Override
 	public CouponClientFacade login(String name, String password, ClientType clientType) {

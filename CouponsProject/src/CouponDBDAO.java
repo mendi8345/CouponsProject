@@ -10,6 +10,7 @@ import java.util.Set;
 public class CouponDBDAO implements CouponDAO {
 
 	Connection con;
+	Company company;
 
 	@Override
 
@@ -41,6 +42,7 @@ public class CouponDBDAO implements CouponDAO {
 			while (rs.next()) {
 				id = rs.getLong("ID");
 			}
+			pstmt.close();
 
 			System.out.println("Coupon created  " + coupon.toString());
 			sql = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
@@ -87,27 +89,31 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public void updateCoupon(Coupon coupon) throws Exception {
+		this.con = DriverManager.getConnection(Database.getDBUrl());
 
 		try {
-			String query = "UPDATE Coupons SET END_DATE=?, PRICE=?, AMOUNT=?, MESSAGE=?, IMAGE=?, ISACTIVE=? WHERE ID=?";
+			String sql = "UPDATE Coupon SET endDate=?, price=?, amount=?, messege=?, image=? WHERE ID=?";
+			System.out.println("updateCoupon test 1");
 
-			PreparedStatement pstmt = this.con.prepareStatement(query);
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			System.out.println("updateCoupon test 1");
 
 			pstmt.setDate(1, coupon.getEndDate());
 			pstmt.setDouble(2, coupon.getPrice());
 			pstmt.setInt(3, coupon.getAmount());
-			pstmt.setString(4, coupon.getImage());
-
-			pstmt.setString(5, coupon.getMessege());
+			pstmt.setString(4, coupon.getMessege());
+			pstmt.setString(5, coupon.getImage());
 			pstmt.setLong(6, coupon.getId());
 
 			pstmt.executeUpdate();
+
 			pstmt.close();
 
 		} catch (SQLException e) {
 
 			throw new Exception(e);
 		} finally {
+			this.con.close();
 
 		}
 	}
@@ -119,14 +125,16 @@ public class CouponDBDAO implements CouponDAO {
 
 		try (Statement stm = this.con.createStatement()) {
 			String sql = "SELECT * FROM Coupon WHERE ID=" + id;
+			System.out.println("getCoupon test 1");
 
 			ResultSet rs = stm.executeQuery(sql);
-			System.out.println("getCoupon.test 1");
-
 			rs.next();
-
 			coupon.setId(rs.getLong(1));
+			System.out.println("getCoupon test 2");
+
 			coupon.setTitle(rs.getString(2));
+			System.out.println("getCoupon test 4");
+
 			coupon.setStartDate(rs.getDate(3));
 			coupon.setEndDate(rs.getDate(4));
 			coupon.setAmount(rs.getInt(5));
@@ -137,9 +145,11 @@ public class CouponDBDAO implements CouponDAO {
 
 		} catch (SQLException e) {
 			throw new Exception("unable to get coupon data");
+
 		} finally {
 			this.con.close();
 		}
+
 		return coupon;
 	}
 
@@ -179,6 +189,8 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
+		this.con = DriverManager.getConnection(Database.getDBUrl());
+
 		try {
 
 			String query = "SELECT * FROM Coupons WHERE TYPE=?";

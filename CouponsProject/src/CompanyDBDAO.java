@@ -10,52 +10,79 @@ import java.util.Set;
 
 public class CompanyDBDAO implements CompanyDAO {
 	Connection con;
-	Object set;
-	private Set<Company> allCompanies;
-
-	Company_Coupon company_coupon = new Company_Coupon();
 
 	@Override
 	public void insertCompany(Company company) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String sql = "INSERT INTO Company (compName,password,email)  VALUES(?,?,?)";
 
-		try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
+		boolean companyExist = false;
+		Set<Company> allCompanies = new HashSet<Company>();
+		for (Company c : allCompanies) {
+			if (c.getCompName().equals(company.getCompName())) {
+				companyExist = true;
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
+				break;
 
-			pstmt.setString(1, company.getCompName());
-			pstmt.setString(2, company.getPassword());
-			pstmt.setString(3, company.getEmail());
-
-			pstmt.executeUpdate();
-			System.out.println("Company created" + company.toString());
-		} catch (SQLException e) {
-			throw new Exception("Company creation failed");
-		} finally {
-			this.con.close();
+			}
 		}
+		if (!companyExist) {
 
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+			String sql = "INSERT INTO Company (compName,password,email)  VALUES(?,?,?)";
+
+			try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
+
+				pstmt.setString(1, company.getCompName());
+				pstmt.setString(2, company.getPassword());
+				pstmt.setString(3, company.getEmail());
+
+				pstmt.executeUpdate();
+				System.out.println("Company created" + company.toString());
+			} catch (SQLException e) {
+				throw new Exception("Company creation failed");
+			} finally {
+				this.con.close();
+			}
+		}
 	}
 
 	@Override
 	public void removeCompany(Company company) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String pre1 = "DELETE FROM Company WHERE id=?";
 
-		try (PreparedStatement pstm1 = this.con.prepareStatement(pre1);) {
-			this.con.setAutoCommit(false);
-			pstm1.setLong(1, company.getId());
-			pstm1.executeUpdate();
+		// CouponDBDAO couponDBDAO = new CouponDBDAO();
+		//
+		// Set<Coupon> compCoupons = new HashSet<Coupon>();
+		// compCoupons = getCompCoupons(company);
+		//
+		// for (Coupon c : compCoupons) {
+		// c = new Coupon();
+		// couponDBDAO.removeCoupon(c);
+		// }
+		// {
+		//
+		// }
+		this.con = DriverManager.getConnection(Database.getDBUrl());
+		String pre1 = "DELETE FROM Company WHERE id = ?";
+		try (PreparedStatement pstm = this.con.prepareStatement(pre1);) {
+			pstm.setLong(1, company.getId());
+			System.out.println("removeCompany test  1");
+
+			pstm.executeUpdate();
+			pstm.close();
+			System.out.println("removeCompany succeedes");
+
 			this.con.commit();
 
 		} catch (SQLException e) {
+			this.con.commit();
+
 			try {
 				this.con.rollback();
-				System.out.println("removeCompany succeeded");
 			} catch (SQLException e1) {
 				throw new Exception("Database error");
 			}
-			throw new Exception("failed to remove company");
+
 		} finally {
+
 			this.con.close();
 		}
 	}
@@ -112,62 +139,65 @@ public class CompanyDBDAO implements CompanyDAO {
 	@Override
 	public Set<Company> getAllCompany() throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		Set<Company> allCompanies = new HashSet<Company>();
+		Set<Company> set = new HashSet<Company>();
 
-		String sql = "SELECT * FROM Company";
-		try (Statement stm = this.con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
+		try {
+			Statement stm = this.con.createStatement();
+			String sql = "SELECT * FROM Company";
+			ResultSet rs = stm.executeQuery(sql);
+
 			while (rs.next()) {
-				long id = rs.getLong(1);
-				String compName = rs.getString(2);
-				String password = rs.getString(3);
-				String email = rs.getString(4);
+				Company company = new Company();
 
-				allCompanies.add(new Company(id, compName, password, email));
+				company.setId(rs.getLong(1));
+				company.setCompName(rs.getString(2));
+				company.setPassword(rs.getString(3));
+				company.setEmail(rs.getString(4));
+				// System.out.println("this is" + company.toString());
+				set.add(company);
 
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
-			throw new Exception("cannot get Company data");
+			throw new Exception("cannot get company data");
 		} finally {
 			this.con.close();
 		}
-		return this.allCompanies;
-
+		return set;
 	}
 
 	@Override
-	public Set<Coupon> getCompCoupons(long comp_id) throws Exception {
+	public Set<Coupon> getCompCoupons(Company company) throws Exception {
 		Set<Coupon> coupons = new HashSet<Coupon>();
 
 		try {
-			this.con = ConnectionPool.getInstance().getConnection();
-		} catch (Exception e) {
-			throw new Exception("cannot get Company data");
+			this.con = DriverManager.getConnection(Database.getDBUrl());
 
-		}
+			String sql = "SELECT * FROM Coupon as c " + "JOIN Company_Coupon cc " + "ON c.ID = cc.COUPON_ID "
+					+ "WHERE cc.Comp_ID = ?";
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			pstmt.setLong(1, company.getId());
 
-		try {
-			String query = "SELECT * FROM Company_Coupon WHERE comp_id=?";
-			PreparedStatement pstmt = this.con.prepareStatement(query);
 			ResultSet rs = pstmt.executeQuery();
-			Coupon coupon = null;
+
 			while (rs.next()) {
-				pstmt.setLong(1, comp_id);
-				coupon.setId(rs.getLong("ID"));
-				coupon.setTitle(rs.getString("TITLE"));
-				coupon.setStartDate(rs.getDate("START_DATE"));
-				coupon.setEndDate(rs.getDate("END_DATE"));
-				coupon.setAmount(rs.getInt("AMOUNT"));
+				Coupon coupon = new Coupon();
+
+				coupon.setId(rs.getLong("id"));
+				coupon.setTitle(rs.getString("title"));
+				coupon.setStartDate(rs.getDate("startDate"));
+				coupon.setEndDate(rs.getDate("endDate"));
+				coupon.setAmount(rs.getInt("amount"));
+				coupon.setMessege(rs.getString("Messege"));
 				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
-				coupon.setPrice(rs.getDouble("PRICE"));
-				coupon.setImage(rs.getString("IMAGE"));
+				coupon.setPrice(rs.getDouble("price"));
+				coupon.setImage(rs.getString("image"));
 				coupons.add(coupon);
 			}
 			pstmt.close();
 		} catch (SQLException e) {
 			throw new Exception(e);
 		} finally {
-			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return coupons;
 	}

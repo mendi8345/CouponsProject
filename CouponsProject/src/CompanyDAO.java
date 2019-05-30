@@ -13,7 +13,7 @@ public interface CompanyDAO {
 
 	Set<Company> getAllCompany() throws Exception;
 
-	Set<Coupon> getCompCoupons(long id) throws Exception;
+	Set<Coupon> getCompCoupons(Company company) throws Exception;
 
 	boolean login(String compName, String password) throws Exception;
 
