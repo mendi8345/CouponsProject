@@ -13,22 +13,36 @@ public class CustomerDBDAO implements CustomerDAO {
 
 	@Override
 	public void insertCustomer(Customer customer) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String sql = "INSERT INTO Customer (custName,password)  VALUES(?,?)";
 
-		try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
+		boolean customerExist = false;
+		Set<Customer> allCustomer = new HashSet<Customer>();
+		allCustomer = getAllCustomer();
+		for (Customer c : allCustomer) {
+			if (c.getCustName().equals(customer.getCustName())) {
+				customerExist = true;
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
+				break;
 
-			pstmt.setString(1, customer.getCustName());
-			pstmt.setString(2, customer.getPassword());
-
-			pstmt.executeUpdate();
-			System.out.println("Customer created" + customer.toString());
-		} catch (SQLException e) {
-			throw new Exception("Customer creation failed");
-		} finally {
-			this.con.close();
+			}
 		}
+		if (!customerExist) {
 
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+			String sql = "INSERT INTO Customer (custName,password)  VALUES(?,?)";
+
+			try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
+
+				pstmt.setString(1, customer.getCustName());
+				pstmt.setString(2, customer.getPassword());
+
+				pstmt.executeUpdate();
+				System.out.println("Customer created" + customer.toString());
+			} catch (SQLException e) {
+				throw new Exception("Customer creation failed");
+			} finally {
+				this.con.close();
+			}
+		}
 	}
 
 	@Override
@@ -183,23 +197,35 @@ public class CustomerDBDAO implements CustomerDAO {
 
 	@Override
 	public void associateCouponToCustomer(Customer customer, Coupon coupon) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		boolean purchasedAlready = false;
+		Set<Coupon> allCoupon = new HashSet<Coupon>();
+		allCoupon = getCustCoupons(customer);
+		for (Coupon c : allCoupon) {
+			if (c.getTitle().equals(coupon.getTitle())) {
+				purchasedAlready = true;
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
+				break;
 
-		try {
-			String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
-			PreparedStatement pstmt = this.con.prepareStatement(sql);
-			pstmt.setLong(1, customer.getId());
-			pstmt.setLong(2, coupon.getId());
-			pstmt.executeUpdate();
-
-			pstmt.close();
-
-		} catch (SQLException e) {
-
-			System.out.println("Unable to drop tables");
-		} finally {
-
+			}
 		}
-	}
+		if (!purchasedAlready) {
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+			try {
+				String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
+				PreparedStatement pstmt = this.con.prepareStatement(sql);
+				pstmt.setLong(1, customer.getId());
+				pstmt.setLong(2, coupon.getId());
+				pstmt.executeUpdate();
 
+				pstmt.close();
+
+			} catch (SQLException e) {
+
+				System.out.println("Unable to drop tables");
+			} finally {
+
+			}
+		}
+
+	}
 }

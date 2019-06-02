@@ -35,7 +35,6 @@ public class Test {
 
 		// adminFacade.getAllCompany();
 		System.out.println("companyDBDAO.getCompCoupons" + companyDBDAO.getCompCoupons(company2));
-		// adminFacade.removeCompany(company2); עובד
 		// adminFacade.updateCompany(company1);עובד
 		// System.out.println(adminFacade.getAllCompany());
 		System.out.println();
@@ -62,7 +61,10 @@ public class Test {
 		CustomerFacade customerFacade = new CustomerFacade(customer3);
 
 		customerFacade.purchaseCoupon(coupon1);
-		customerFacade.getAllPurchasedCoupon();
+		adminFacade.removeCompany(company3);
+
+		// customerFacade.getAllPurchasedCoupon();
+		System.out.println(customerFacade.getAllPurchasedCouponByPrice(6));
 		// System.out.println(customerFacade.getAllCustomer());
 
 	}

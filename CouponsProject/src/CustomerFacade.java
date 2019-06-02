@@ -25,7 +25,7 @@ public class CustomerFacade implements CouponClientFacade {
 			throw new Exception("Coupon does not available ");
 		}
 		// and not purchased already
-		if (getAllPurchasedCoupon().contains(couponData)) {
+		if (getAllPurchasedCoupon().contains(couponData.getTitle())) {
 			throw new Exception("Coupon already exist");
 		}
 		// purchase

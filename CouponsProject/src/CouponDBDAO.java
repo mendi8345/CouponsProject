@@ -15,73 +15,112 @@ public class CouponDBDAO implements CouponDAO {
 	@Override
 
 	public void insertCoupon(Company company, Coupon coupon) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String sql = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
+		boolean couponExist = false;
+		Set<Coupon> allCoupon = new HashSet<Coupon>();
+		allCoupon = getAllCoupons();
+		for (Coupon c : allCoupon) {
+			if (c.getTitle().equals(coupon.getTitle())) {
+				couponExist = true;
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>coupon already exist!");
+				break;
 
-		try {
-			PreparedStatement pstmt = this.con.prepareStatement(sql);
-
-			pstmt.setString(1, coupon.getTitle());
-			pstmt.setDate(2, coupon.getStartDate());
-			pstmt.setDate(3, coupon.getEndDate());
-			pstmt.setInt(4, coupon.getAmount());
-			pstmt.setString(5, coupon.getMessege());
-			pstmt.setString(6, coupon.getCouponType().name());
-			pstmt.setDouble(7, coupon.getPrice());
-
-			pstmt.setString(8, coupon.getImage());
-
-			pstmt.executeUpdate();
-			pstmt.close();
-
-			long id = 0;
-			sql = "SELECT ID FROM Coupon WHERE TITLE=?";
-			pstmt = this.con.prepareStatement(sql);
-			pstmt.setString(1, coupon.getTitle());
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				id = rs.getLong("ID");
 			}
-			pstmt.close();
+		}
+		if (!couponExist) {
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+			String sql = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
 
-			System.out.println("Coupon created  " + coupon.toString());
-			sql = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
-			pstmt = this.con.prepareStatement(sql);
-			pstmt.setLong(1, company.getId());
-			pstmt.setLong(2, id);
-			System.out.println("11111111111");
+			try {
+				PreparedStatement pstmt = this.con.prepareStatement(sql);
 
-			pstmt.executeUpdate();
-			System.out.println("hsfhsghfghsgdfds");
+				pstmt.setString(1, coupon.getTitle());
+				pstmt.setDate(2, coupon.getStartDate());
+				pstmt.setDate(3, coupon.getEndDate());
+				pstmt.setInt(4, coupon.getAmount());
+				pstmt.setString(5, coupon.getMessege());
+				pstmt.setString(6, coupon.getCouponType().name());
+				pstmt.setDouble(7, coupon.getPrice());
 
-			pstmt.close();
+				pstmt.setString(8, coupon.getImage());
 
-		} catch (SQLException e) {
-			throw new Exception("Coupons insert failed");
-		} finally {
-			this.con.close();
+				pstmt.executeUpdate();
+				pstmt.close();
+
+				long id = 0;
+				sql = "SELECT ID FROM Coupon WHERE TITLE=?";
+				pstmt = this.con.prepareStatement(sql);
+				pstmt.setString(1, coupon.getTitle());
+				ResultSet rs = pstmt.executeQuery();
+				while (rs.next()) {
+					id = rs.getLong("ID");
+				}
+				pstmt.close();
+
+				System.out.println("Coupon created  " + coupon.toString());
+				sql = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
+				pstmt = this.con.prepareStatement(sql);
+				pstmt.setLong(1, company.getId());
+				pstmt.setLong(2, id);
+				System.out.println("11111111111");
+
+				pstmt.executeUpdate();
+				System.out.println("hsfhsghfghsgdfds");
+
+				pstmt.close();
+
+			} catch (SQLException e) {
+				throw new Exception("Coupons insert failed");
+			} finally {
+				this.con.close();
+			}
 		}
 	}
 
 	@Override
 	public void removeCoupon(Coupon coupon) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String pre1 = "DELETE FROM Coupon WHERE id=?";
+		try {
+			long id;
+			Set<Coupon> allCoupons = new HashSet<Coupon>();
+			allCoupons = getAllCoupons();
 
-		try (PreparedStatement pstm1 = this.con.prepareStatement(pre1);) {
-			this.con.setAutoCommit(false);
-			pstm1.setLong(1, coupon.getId());
-			pstm1.executeUpdate();
-			this.con.commit();
+			for (Coupon c : allCoupons) {
+				if (c.getTitle().equals(coupon.getTitle())) {
+					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + coupon.getTitle());
+					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + c.getTitle());
+
+					id = c.getId();
+					String sql = "DELETE FROM CUSTOMER_COUPON WHERE COUPON_ID=?";
+					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
+
+					PreparedStatement pstm = this.con.prepareStatement(sql);
+					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
+
+					pstm.setLong(1, id);
+					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
+
+					pstm.executeUpdate();
+					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
+
+					break;
+				}
+			}
+			String sql = "DELETE FROM Company_Coupon WHERE COUPON_ID=?";
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
+			pstmt.setLong(1, coupon.getId());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			String sql2 = "DELETE FROM Coupon WHERE ID=?";
+
+			PreparedStatement pstmt2 = this.con.prepareStatement(sql2);
+			pstmt2.setLong(1, coupon.getId());
+			pstmt2.executeUpdate();
+			pstmt2.close();
 
 		} catch (SQLException e) {
-			try {
-				this.con.rollback();
-				System.out.println("removes coupon succeeded");
-			} catch (SQLException e1) {
-				throw new Exception("Database error");
-			}
-			throw new Exception("failed to remove coupon");
+
+			throw new Exception("failed to remove coupon FROM CUSTOMER_COUPON");
 		} finally {
 			this.con.close();
 		}
@@ -197,7 +236,7 @@ public class CouponDBDAO implements CouponDAO {
 			PreparedStatement pstmt = this.con.prepareStatement(query);
 			pstmt.setString(1, couponType.toString());
 			ResultSet rs = pstmt.executeQuery();
-			Coupon coupon = null;
+			Coupon coupon = new Coupon();
 			while (rs.next()) {
 				coupon.setId(rs.getLong(1));
 				coupon.setTitle(rs.getString(2));

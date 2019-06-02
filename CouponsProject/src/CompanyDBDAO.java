@@ -16,6 +16,7 @@ public class CompanyDBDAO implements CompanyDAO {
 
 		boolean companyExist = false;
 		Set<Company> allCompanies = new HashSet<Company>();
+		allCompanies = getAllCompany();
 		for (Company c : allCompanies) {
 			if (c.getCompName().equals(company.getCompName())) {
 				companyExist = true;
@@ -48,18 +49,18 @@ public class CompanyDBDAO implements CompanyDAO {
 	@Override
 	public void removeCompany(Company company) throws Exception {
 
-		// CouponDBDAO couponDBDAO = new CouponDBDAO();
-		//
-		// Set<Coupon> compCoupons = new HashSet<Coupon>();
-		// compCoupons = getCompCoupons(company);
-		//
-		// for (Coupon c : compCoupons) {
-		// c = new Coupon();
-		// couponDBDAO.removeCoupon(c);
-		// }
-		// {
-		//
-		// }
+		CouponDBDAO couponDBDAO = new CouponDBDAO();
+
+		Set<Coupon> compCoupons = new HashSet<Coupon>();
+		compCoupons = getCompCoupons(company);
+
+		for (Coupon c : compCoupons) {
+
+			couponDBDAO.removeCoupon(c);
+		}
+		{
+
+		}
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 		String pre1 = "DELETE FROM Company WHERE id = ?";
 		try (PreparedStatement pstm = this.con.prepareStatement(pre1);) {
