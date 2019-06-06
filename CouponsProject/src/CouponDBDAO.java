@@ -28,45 +28,58 @@ public class CouponDBDAO implements CouponDAO {
 		}
 		if (!couponExist) {
 			this.con = DriverManager.getConnection(Database.getDBUrl());
-			String sql = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
+			String sql1 = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
 
 			try {
-				PreparedStatement pstmt = this.con.prepareStatement(sql);
+				PreparedStatement pstmt1 = this.con.prepareStatement(sql1);
 
-				pstmt.setString(1, coupon.getTitle());
-				pstmt.setDate(2, coupon.getStartDate());
-				pstmt.setDate(3, coupon.getEndDate());
-				pstmt.setInt(4, coupon.getAmount());
-				pstmt.setString(5, coupon.getMessege());
-				pstmt.setString(6, coupon.getCouponType().name());
-				pstmt.setDouble(7, coupon.getPrice());
+				pstmt1.setString(1, coupon.getTitle());
+				pstmt1.setDate(2, coupon.getStartDate());
+				pstmt1.setDate(3, coupon.getEndDate());
+				pstmt1.setInt(4, coupon.getAmount());
+				pstmt1.setString(5, coupon.getMessege());
+				pstmt1.setString(6, coupon.getCouponType().name());
+				pstmt1.setDouble(7, coupon.getPrice());
+				pstmt1.setString(8, coupon.getImage());
 
-				pstmt.setString(8, coupon.getImage());
-
-				pstmt.executeUpdate();
-				pstmt.close();
+				pstmt1.executeUpdate();
+				pstmt1.close();
+				System.out.println("Coupon created  " + coupon.toString());
 
 				long id = 0;
-				sql = "SELECT ID FROM Coupon WHERE TITLE=?";
-				pstmt = this.con.prepareStatement(sql);
-				pstmt.setString(1, coupon.getTitle());
-				ResultSet rs = pstmt.executeQuery();
+				String sql2 = "SELECT ID FROM Coupon WHERE TITLE=?";
+				PreparedStatement pstmt2 = this.con.prepareStatement(sql2);
+				pstmt2.setString(1, coupon.getTitle());
+				System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&77" + coupon.getTitle());
+
+				ResultSet rs = pstmt2.executeQuery();
+				System.out.println("()()()()()()()()()()()()()()()(rs.getLong== ");
+
 				while (rs.next()) {
 					id = rs.getLong("ID");
+					System.out.println("()()()()()()()()()()()()()()()(rs.getLong== " + id);
 				}
-				pstmt.close();
 
+				long compId = 0;
+				String sql3 = "SELECT ID FROM company WHERE CompName=?";
+				PreparedStatement pstmt3 = this.con.prepareStatement(sql3);
+				pstmt3.setString(1, company.getCompName());
+				ResultSet rs1 = pstmt3.executeQuery();
+				while (rs1.next()) {
+					compId = rs1.getLong("ID");
+					System.out.println("()()()()()()()()()()()(" + compId);
+				}
 				System.out.println("Coupon created  " + coupon.toString());
-				sql = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
-				pstmt = this.con.prepareStatement(sql);
-				pstmt.setLong(1, company.getId());
-				pstmt.setLong(2, id);
+				String sql4 = "INSERT INTO Company_Coupon (COMP_ID,COUPON_ID) VALUES(?, ?)";
+				PreparedStatement pstmt4 = this.con.prepareStatement(sql4);
+				pstmt4.setLong(1, compId);
+				pstmt4.setLong(2, id);
 				System.out.println("11111111111");
 
-				pstmt.executeUpdate();
+				pstmt4.executeUpdate();
 				System.out.println("hsfhsghfghsgdfds");
 
-				pstmt.close();
+				pstmt4.close();
 
 			} catch (SQLException e) {
 				throw new Exception("Coupons insert failed");
@@ -78,9 +91,10 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public void removeCoupon(Coupon coupon) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
 		try {
 			long id;
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+
 			Set<Coupon> allCoupons = new HashSet<Coupon>();
 			allCoupons = getAllCoupons();
 
@@ -90,17 +104,15 @@ public class CouponDBDAO implements CouponDAO {
 					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + c.getTitle());
 
 					id = c.getId();
+					System.out.println(c.getId());
+					this.con = DriverManager.getConnection(Database.getDBUrl());
+
 					String sql = "DELETE FROM CUSTOMER_COUPON WHERE COUPON_ID=?";
-					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
-
+					System.out.println("//////////////////////**test1");
 					PreparedStatement pstm = this.con.prepareStatement(sql);
-					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
-
 					pstm.setLong(1, id);
-					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
-
 					pstm.executeUpdate();
-					System.out.println("/*/*/*//**/*/*/**/*/*///*/*/*/*/*/*/*//*/***test1");
+					pstm.close();
 
 					break;
 				}
@@ -183,7 +195,6 @@ public class CouponDBDAO implements CouponDAO {
 			coupon.setImage(rs.getString(9));
 
 		} catch (SQLException e) {
-			throw new Exception("unable to get coupon data");
 
 		} finally {
 			this.con.close();

@@ -10,6 +10,7 @@ import java.util.Set;
 public class CustomerDBDAO implements CustomerDAO {
 	Connection con;
 	Customer customer;
+	CouponDBDAO couponDBDAO = new CouponDBDAO();
 
 	@Override
 	public void insertCustomer(Customer customer) throws Exception {
@@ -20,7 +21,7 @@ public class CustomerDBDAO implements CustomerDAO {
 		for (Customer c : allCustomer) {
 			if (c.getCustName().equals(customer.getCustName())) {
 				customerExist = true;
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Customer name already exist!");
 				break;
 
 			}
@@ -48,6 +49,26 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public void removeCustomer(Customer customer) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
+
+		CouponDBDAO couponDBDAO = new CouponDBDAO();
+
+		Set<Coupon> custCoupons = new HashSet<Coupon>();
+		custCoupons = getCustCoupons(customer);
+
+		for (Coupon c : custCoupons) {
+
+			long id = c.getId();
+			System.out.println(c.getId());
+			this.con = DriverManager.getConnection(Database.getDBUrl());
+
+			String sql = "DELETE FROM CUSTOMER_COUPON WHERE COUPON_ID=?";
+			System.out.println("//////////////////////**test1");
+			PreparedStatement pstm = this.con.prepareStatement(sql);
+			pstm.setLong(1, id);
+			pstm.executeUpdate();
+			pstm.close();
+
+		}
 		String pre1 = "DELETE FROM Customer WHERE id=?";
 
 		try (PreparedStatement pstm1 = this.con.prepareStatement(pre1);) {
@@ -70,12 +91,11 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public void updateCustomer(Customer customer) throws Exception {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
-		String sql = "UPDATE Customer SET custName=?, password=?";
+		String sql = "UPDATE Customer SET password=?";
 
 		try {
 			PreparedStatement pstmt = this.con.prepareStatement(sql);
-			pstmt.setString(1, customer.getCustName());
-			pstmt.setString(2, customer.getPassword());
+			pstmt.setString(1, customer.getPassword());
 			pstmt.executeUpdate(sql);
 			pstmt.close();
 
@@ -218,6 +238,8 @@ public class CustomerDBDAO implements CustomerDAO {
 				pstmt.executeUpdate();
 
 				pstmt.close();
+				coupon.setAmount(coupon.getAmount() + 100);
+				this.couponDBDAO.updateCoupon(coupon);
 
 			} catch (SQLException e) {
 

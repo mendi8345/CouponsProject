@@ -11,16 +11,17 @@ public class Test {
 		Connection con = DriverManager.getConnection(Database.getDBUrl());
 		CustomerDBDAO customerDBDAO = new CustomerDBDAO();
 		CompanyDBDAO companyDBDAO = new CompanyDBDAO();
+		Database.dropTables(con);
+
 		Database.createTables(con);
-		// Database.dropTables(con);
 
 		Company company1 = new Company(1, " market", "4211", "superpharm@java.com");
 		Company company2 = new Company(2, "dominos", "2345", "dominos@java.com");
 		Company company3 = new Company(3, "rami levi", "6789", "ramilevi" + "@java.com");
 
-		Coupon coupon1 = new Coupon(1, "gd", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 2, "electric",
+		Coupon coupon1 = new Coupon(1, "gd", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 600, "electric",
 				CouponType.food, 5.0, "gggg");
-		Coupon coupon2 = new Coupon(431, "pizza", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 2, "food",
+		Coupon coupon2 = new Coupon(2, "pizza", DateUtils.GetCurrentDate(), DateUtils.GetEndDate(), 700, "food",
 				CouponType.electric, 8.0, "@gmail");
 
 		Customer customer1 = new Customer(1, "tom", "1234");
@@ -34,7 +35,6 @@ public class Test {
 		adminFacade.createCompany(company3);
 
 		// adminFacade.getAllCompany();
-		System.out.println("companyDBDAO.getCompCoupons" + companyDBDAO.getCompCoupons(company2));
 		// adminFacade.updateCompany(company1);עובד
 		// System.out.println(adminFacade.getAllCompany());
 		System.out.println();
@@ -44,14 +44,13 @@ public class Test {
 		adminFacade.insertCustomer(customer2);
 		adminFacade.insertCustomer(customer3);
 
-		// adminFacade.removeCustomer(customer1);עובד
-
 		CompanyFacade companyFacade = new CompanyFacade(company3);
 		System.out.println();
 		System.out.println("----------------------------------- table coupon -----------------------------------");
 
 		companyFacade.createCoupon(coupon1);
 		companyFacade.createCoupon(coupon2);
+		System.out.println("companyDBDAO.getCompCoupons" + companyDBDAO.getCompCoupons(company2));
 
 		// couponDBDAO.removeCoupon(coupon);
 		// System.out.println("get 1 company============= " +
@@ -61,10 +60,16 @@ public class Test {
 		CustomerFacade customerFacade = new CustomerFacade(customer3);
 
 		customerFacade.purchaseCoupon(coupon1);
-		adminFacade.removeCompany(company3);
+		customerFacade.purchaseCoupon(coupon2);
+		DailyTask dailyTask = new DailyTask();
+		dailyTask.startThread();
+		// adminFacade.removeCustomer(customer3);
+		// adminFacade.removeCompany(company1);
+		// adminFacade.removeCompany(company2);
+		// adminFacade.removeCompany(company3);
 
-		// customerFacade.getAllPurchasedCoupon();
-		System.out.println(customerFacade.getAllPurchasedCouponByPrice(6));
+		new Thread(new DailyTask()).start();
+		System.out.println(customerFacade.getAllPurchasedCouponByPrice(9));
 		// System.out.println(customerFacade.getAllCustomer());
 
 	}

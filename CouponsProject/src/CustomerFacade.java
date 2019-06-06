@@ -6,7 +6,6 @@ public class CustomerFacade implements CouponClientFacade {
 	private CouponDAO couponDAO = new CouponDBDAO();
 
 	private Customer customer;
-	private Coupon coupon;
 
 	public CustomerFacade(Customer customer) {
 		this.customer = customer;
@@ -20,20 +19,19 @@ public class CustomerFacade implements CouponClientFacade {
 		if (couponData == null) {
 			throw new Exception("Coupon does not exist");
 		}
-		if (couponData.getAmount() <= 0) {
-
+		if (couponData.getAmount() < 0) {
+			System.out.println(
+					"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4couponData.getAmount" + couponData.getAmount());
 			throw new Exception("Coupon does not available ");
 		}
 		// and not purchased already
-		if (getAllPurchasedCoupon().contains(couponData.getTitle())) {
-			throw new Exception("Coupon already exist");
-		}
+		// if (getAllPurchasedCoupon().contains(couponData())) {
+		// throw new Exception("Coupon already exist");
+		// }
 		// purchase
 		this.customerDAO.associateCouponToCustomer(this.customer, couponData);
 
 		// decrease amount
-		couponData.setAmount(couponData.getAmount() + 100);
-		this.couponDAO.updateCoupon(couponData);
 
 	}
 

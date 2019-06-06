@@ -29,24 +29,22 @@ public class Database {
 		String sqlCompany_Coupon;
 
 		try {
+			sqlCustomer_Coupon = "drop table app.Customer_Coupon";
+			sqlCompany_Coupon = "drop table app.Company_Coupon";
 			sqlCoupon = "drop table app.Coupon";
 			sqlCompany = "drop table app.Company";
 			sqlCustomer = "drop table app.Customer";
-			sqlCustomer_Coupon = "drop table app.Customer_Coupon";
-			sqlCompany_Coupon = "drop table app.Company_Coupon";
-			System.out.println("DROP TABL TEST 1");
 
+			stmt.executeUpdate(sqlCustomer_Coupon);
+			System.out.println("Success:" + sqlCustomer_Coupon);
+			stmt.executeUpdate(sqlCompany_Coupon);
+			System.out.println("Success:" + sqlCompany_Coupon);
 			stmt.executeUpdate(sqlCoupon);
-			System.out.println("DROP TABL TEST 1");
 			System.out.println("Success:" + sqlCoupon);
 			stmt.executeUpdate(sqlCompany);
 			System.out.println("Success:" + sqlCompany);
 			stmt.executeUpdate(sqlCustomer);
 			System.out.println("Success:" + sqlCustomer);
-			stmt.executeUpdate(sqlCustomer_Coupon);
-			System.out.println("Success:" + sqlCustomer_Coupon);
-			stmt.executeUpdate(sqlCustomer_Coupon);
-			System.out.println("Success:" + sqlCustomer_Coupon);
 
 		} catch (Exception e) {
 			System.out.println("Unable to drop tables");

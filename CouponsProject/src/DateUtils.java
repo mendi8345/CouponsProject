@@ -10,7 +10,7 @@ public class DateUtils {
 
 	public static java.sql.Date GetEndDate() {
 		LocalDate endDate = LocalDate.now();
-		endDate = endDate.plusMonths(1);
+		// endDate = endDate.plusDays(1);
 		java.sql.Date date = java.sql.Date.valueOf(endDate);
 		return date;
 

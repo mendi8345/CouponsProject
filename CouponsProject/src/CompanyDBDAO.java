@@ -55,10 +55,8 @@ public class CompanyDBDAO implements CompanyDAO {
 		compCoupons = getCompCoupons(company);
 
 		for (Coupon c : compCoupons) {
-
+			System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh" + c.toString());
 			couponDBDAO.removeCoupon(c);
-		}
-		{
 
 		}
 		this.con = DriverManager.getConnection(Database.getDBUrl());
@@ -93,11 +91,10 @@ public class CompanyDBDAO implements CompanyDAO {
 		this.con = DriverManager.getConnection(Database.getDBUrl());
 
 		try {
-			String sql = "UPDATE Company " + " SET compName='" + company.getCompName() + "', password='"
-					+ company.getPassword() + "', email='" + company.getEmail() + "' WHERE ID=" + company.getId();
+			String sql = "UPDATE Company " + " SET password='" + company.getPassword() + "', email='"
+					+ company.getEmail() + "' WHERE ID=" + company.getId();
 			PreparedStatement pstmt = this.con.prepareStatement(sql);
-			pstmt.setString(1, company.getCompName());
-			pstmt.setString(2, company.getPassword());
+			pstmt.setString(1, company.getPassword());
 			pstmt.setString(2, company.getEmail());
 
 			pstmt.executeUpdate(sql);
