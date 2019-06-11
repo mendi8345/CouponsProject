@@ -28,7 +28,7 @@ public class CustomerDBDAO implements CustomerDAO {
 		}
 		if (!customerExist) {
 
-			this.con = DriverManager.getConnection(Database.getDBUrl());
+			this.con = ConnectionPool.getInstance().getConnection();
 			String sql = "INSERT INTO Customer (custName,password)  VALUES(?,?)";
 
 			try (PreparedStatement pstmt = this.con.prepareStatement(sql)) {
@@ -41,14 +41,14 @@ public class CustomerDBDAO implements CustomerDAO {
 			} catch (SQLException e) {
 				throw new Exception("Customer creation failed");
 			} finally {
-				this.con.close();
+				ConnectionPool.getInstance().returnConnection(this.con);
 			}
 		}
 	}
 
 	@Override
 	public void removeCustomer(Customer customer) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 
 		CouponDBDAO couponDBDAO = new CouponDBDAO();
 
@@ -84,13 +84,13 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 			throw new Exception("failed to remove customer");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 	}
 
 	@Override
 	public void updateCustomer(Customer customer) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		String sql = "UPDATE Customer SET password=?";
 
 		try {
@@ -103,14 +103,14 @@ public class CustomerDBDAO implements CustomerDAO {
 
 			throw new Exception("update Customer failed");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 
 		}
 	}
 
 	@Override
 	public Customer getCustomer(long id) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Customer customer = new Customer();
 		try (Statement stm = this.con.createStatement()) {
 			String sql = "SELECT * FROM Customer WHERE ID=" + id;
@@ -123,14 +123,14 @@ public class CustomerDBDAO implements CustomerDAO {
 		} catch (SQLException e) {
 			throw new Exception("unable to get customer data");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return customer;
 	}
 
 	@Override
 	public Set<Customer> getAllCustomer() throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Set<Customer> set = new HashSet<>();
 		String sql = "SELECT * FROM Customer";
 		try (Statement stm = this.con.createStatement()) {
@@ -148,7 +148,7 @@ public class CustomerDBDAO implements CustomerDAO {
 			System.out.println(e);
 			throw new Exception("cannot get Customer data");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return set;
 	}
@@ -156,7 +156,7 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public boolean login(String custName, String password) throws Exception {
 		boolean loginStatus = false;
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 
 		try {
 			String sql = "SELECT * FROM Customer WHERE custName=? AND password=?";
@@ -171,7 +171,7 @@ public class CustomerDBDAO implements CustomerDAO {
 
 			System.out.println(e);
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return loginStatus;
 	}
@@ -179,7 +179,7 @@ public class CustomerDBDAO implements CustomerDAO {
 	@Override
 	public Set<Coupon> getCustCoupons(Customer customer) throws Exception {
 		Set<Coupon> set = new HashSet<Coupon>();
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		System.out.println("getCustCoupons test 1");
 		try {
 			String sql = "SELECT * FROM Coupon as c " + "JOIN Customer_Coupon cc " + "ON c.ID = cc.COUPON_ID "
@@ -229,7 +229,7 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 		}
 		if (!purchasedAlready) {
-			this.con = DriverManager.getConnection(Database.getDBUrl());
+			this.con = ConnectionPool.getInstance().getConnection();
 			try {
 				String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
 				PreparedStatement pstmt = this.con.prepareStatement(sql);
@@ -245,6 +245,8 @@ public class CustomerDBDAO implements CustomerDAO {
 
 				System.out.println("Unable to drop tables");
 			} finally {
+
+				ConnectionPool.getInstance().returnConnection(this.con);
 
 			}
 		}

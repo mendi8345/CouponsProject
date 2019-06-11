@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
@@ -8,14 +9,14 @@ public class ConnectionPool {
 
 	private static ConnectionPool instance;
 	private static int maxConnections = 10;
-
 	private BlockingQueue<Connection> connections = new LinkedBlockingQueue<Connection>(maxConnections);
 
 	private ConnectionPool() throws Exception {
-		try {
-			Class.forName(DateUtils.getDBUrl());
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+
+		Connection con = DriverManager.getConnection(DateUtils.getDBUrl());
+		while (this.connections.size() < maxConnections) {
+			con = DriverManager.getConnection(DateUtils.getDBUrl());
+			this.connections.offer(con);
 		}
 	}
 
@@ -27,27 +28,21 @@ public class ConnectionPool {
 	}
 
 	public synchronized Connection getConnection() throws Exception {
-		while (this.connections.size() == 0) {
-			try {
-				this.wait();
-			} catch (Exception e) {
-				throw new Exception("connection failed");
-			}
+
+		try {
+			Connection connection = this.connections.poll();
+			System.out.println("pool");
+			connection.setAutoCommit(true);
+			System.out.println("commit");
+			return connection;
+		} catch (Exception e) {
+			throw new Exception("connection failed");
 		}
-		Iterator<Connection> iterator = this.connections.iterator();
-		Connection con = iterator.next();
-		iterator.remove();
-		return con;
 	}
 
 	public synchronized void returnConnection(Connection con) throws Exception {
-		try {
-			con.setAutoCommit(true);
-		} catch (SQLException e) {
-			throw new Exception("ERROR! Return Connection Properly Failed!");
-		}
-		this.connections.add(con);
-		this.notify();
+		this.connections.offer(con);
+
 	}
 
 	public synchronized void closeAllConnections(Connection connection) throws Exception {

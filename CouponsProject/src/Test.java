@@ -9,11 +9,10 @@ public class Test {
 		Class.forName("org.apache.derby.jdbc.ClientDriver");
 
 		Connection con = DriverManager.getConnection(Database.getDBUrl());
-		CustomerDBDAO customerDBDAO = new CustomerDBDAO();
-		CompanyDBDAO companyDBDAO = new CompanyDBDAO();
-		Database.dropTables(con);
+		// Database.dropTables(con);
 
 		Database.createTables(con);
+		CouponSystem couponSystem = CouponSystem.getInstance();
 
 		Company company1 = new Company(1, " market", "4211", "superpharm@java.com");
 		Company company2 = new Company(2, "dominos", "2345", "dominos@java.com");
@@ -28,7 +27,16 @@ public class Test {
 		Customer customer2 = new Customer(2, "mendy", "3456");
 		Customer customer3 = new Customer(3, "kobi", "6789");
 
-		AdminFacade adminFacade = new AdminFacade();
+		AdminFacade adminFacade = (AdminFacade) couponSystem.login("admin", "1234", ClientType.admin);
+
+		// CompanyFacade companyFacade1 = (CompanyFacade) couponSystem.login("market",
+		// "4211", ClientType.company);
+		// CompanyFacade companyFacade2 = (CompanyFacade) couponSystem.login("dominos",
+		// "2345", ClientType.company);
+		//
+		CustomerFacade customerFacade1 = (CustomerFacade) couponSystem.login("tom", "1234", ClientType.customer);
+		CustomerFacade customerFacade2 = (CustomerFacade) couponSystem.login("mendy", "3456", ClientType.customer);
+		CompanyFacade companyFacade = new CompanyFacade(company1);
 		System.out.println("----------------------------------- table company -----------------------------------");
 		adminFacade.createCompany(company1);
 		adminFacade.createCompany(company2);
@@ -44,32 +52,28 @@ public class Test {
 		adminFacade.insertCustomer(customer2);
 		adminFacade.insertCustomer(customer3);
 
-		CompanyFacade companyFacade = new CompanyFacade(company3);
 		System.out.println();
 		System.out.println("----------------------------------- table coupon -----------------------------------");
 
 		companyFacade.createCoupon(coupon1);
 		companyFacade.createCoupon(coupon2);
-		System.out.println("companyDBDAO.getCompCoupons" + companyDBDAO.getCompCoupons(company2));
 
 		// couponDBDAO.removeCoupon(coupon);
 		// System.out.println("get 1 company============= " +
 		// CouponDBDAO.getAllCoupons());
 		System.out.println("***");
 
-		CustomerFacade customerFacade = new CustomerFacade(customer3);
-
-		customerFacade.purchaseCoupon(coupon1);
-		customerFacade.purchaseCoupon(coupon2);
-		DailyTask dailyTask = new DailyTask();
-		dailyTask.startThread();
+		customerFacade1.purchaseCoupon(coupon1);
+		customerFacade1.purchaseCoupon(coupon2);
+		// DailyTask dailyTask = new DailyTask();
+		// dailyTask.startThread();
 		// adminFacade.removeCustomer(customer3);
 		// adminFacade.removeCompany(company1);
 		// adminFacade.removeCompany(company2);
 		// adminFacade.removeCompany(company3);
 
-		new Thread(new DailyTask()).start();
-		System.out.println(customerFacade.getAllPurchasedCouponByPrice(9));
+		// new Thread(new DailyTask()).start();
+		System.out.println(customerFacade1.getAllPurchasedCouponByPrice(9));
 		// System.out.println(customerFacade.getAllCustomer());
 
 	}

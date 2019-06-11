@@ -19,7 +19,16 @@ public class CompanyFacade implements CouponClientFacade {
 		this.company = company;
 	}
 
+	public void setCompanyDAO(CompanyDAO companyDAO) {
+		this.companyDAO = companyDAO;
+	}
+
+	public void setCouponDAO(CouponDAO couponDAO) {
+		this.couponDAO = couponDAO;
+	}
+
 	public void createCoupon(Coupon coupon) throws Exception {
+		System.out.println("fvyyyyyyyyyyyyyyy," + coupon.toString());
 		this.couponDAO.insertCoupon(this.company, coupon);
 	}
 

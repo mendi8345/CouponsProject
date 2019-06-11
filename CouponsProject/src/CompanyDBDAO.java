@@ -41,7 +41,7 @@ public class CompanyDBDAO implements CompanyDAO {
 			} catch (SQLException e) {
 				throw new Exception("Company creation failed");
 			} finally {
-				this.con.close();
+				ConnectionPool.getInstance().returnConnection(this.con);
 			}
 		}
 	}
@@ -59,7 +59,7 @@ public class CompanyDBDAO implements CompanyDAO {
 			couponDBDAO.removeCoupon(c);
 
 		}
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		String pre1 = "DELETE FROM Company WHERE id = ?";
 		try (PreparedStatement pstm = this.con.prepareStatement(pre1);) {
 			pstm.setLong(1, company.getId());
@@ -82,13 +82,13 @@ public class CompanyDBDAO implements CompanyDAO {
 
 		} finally {
 
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 	}
 
 	@Override
 	public void updateCompany(Company company) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 
 		try {
 			String sql = "UPDATE Company " + " SET password='" + company.getPassword() + "', email='"
@@ -102,14 +102,14 @@ public class CompanyDBDAO implements CompanyDAO {
 		} catch (SQLException e) {
 			throw new Exception("update Company failed");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 
 	}
 
 	@Override
 	public Company getCompany(long id) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Company company = new Company();
 		try (Statement stm = this.con.createStatement()) {
 			String sql = "SELECT * FROM Company WHERE ID=?";
@@ -128,7 +128,7 @@ public class CompanyDBDAO implements CompanyDAO {
 			System.out.println(e);
 			throw new Exception("unable to get company data");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 
 		return company;
@@ -136,7 +136,7 @@ public class CompanyDBDAO implements CompanyDAO {
 
 	@Override
 	public Set<Company> getAllCompany() throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Set<Company> set = new HashSet<Company>();
 
 		try {
@@ -159,7 +159,7 @@ public class CompanyDBDAO implements CompanyDAO {
 			System.out.println(e);
 			throw new Exception("cannot get company data");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return set;
 	}
@@ -169,7 +169,7 @@ public class CompanyDBDAO implements CompanyDAO {
 		Set<Coupon> coupons = new HashSet<Coupon>();
 
 		try {
-			this.con = DriverManager.getConnection(Database.getDBUrl());
+			this.con = ConnectionPool.getInstance().getConnection();
 
 			String sql = "SELECT * FROM Coupon as c " + "JOIN Company_Coupon cc " + "ON c.ID = cc.COUPON_ID "
 					+ "WHERE cc.Comp_ID = ?";
@@ -196,6 +196,8 @@ public class CompanyDBDAO implements CompanyDAO {
 		} catch (SQLException e) {
 			throw new Exception(e);
 		} finally {
+			ConnectionPool.getInstance().returnConnection(this.con);
+
 		}
 		return coupons;
 	}
@@ -205,11 +207,16 @@ public class CompanyDBDAO implements CompanyDAO {
 		boolean loginStatus = false;
 
 		try {
-			String query = "SELECT * FROM Companies WHERE COMP_NAME=? AND PASSWORD=?";
-			PreparedStatement pstmt = this.con.prepareStatement(query);
+			this.con = ConnectionPool.getInstance().getConnection();
+
+			String sql = "SELECT * FROM Company WHERE compName=? and password=?";
+			PreparedStatement pstmt = this.con.prepareStatement(sql);
 			pstmt.setString(1, compName);
 			pstmt.setString(2, password);
+			System.out.println("JKHJKHJGHJGHMFFGFDDFFDDFFHJLKLKLKL;LK;LKLKLK" + password);
+
 			ResultSet rs = pstmt.executeQuery();
+			System.out.println("9999999999999" + rs.getString(1));
 			if (rs.next()) {
 				loginStatus = true;
 			}
@@ -217,7 +224,7 @@ public class CompanyDBDAO implements CompanyDAO {
 
 			System.out.println(e);
 		} finally {
-			this.con.close();
+
 		}
 		return loginStatus;
 	}

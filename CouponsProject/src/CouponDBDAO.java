@@ -27,7 +27,7 @@ public class CouponDBDAO implements CouponDAO {
 			}
 		}
 		if (!couponExist) {
-			this.con = DriverManager.getConnection(Database.getDBUrl());
+			this.con = ConnectionPool.getInstance().getConnection();
 			String sql1 = "INSERT INTO Coupon (title,startDate,endDate,amount,messege,couponType,price,image)  VALUES(?,?,?,?,?,?,?,?)";
 
 			try {
@@ -84,7 +84,7 @@ public class CouponDBDAO implements CouponDAO {
 			} catch (SQLException e) {
 				throw new Exception("Coupons insert failed");
 			} finally {
-				this.con.close();
+				ConnectionPool.getInstance().returnConnection(this.con);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class CouponDBDAO implements CouponDAO {
 	public void removeCoupon(Coupon coupon) throws Exception {
 		try {
 			long id;
-			this.con = DriverManager.getConnection(Database.getDBUrl());
+			this.con = ConnectionPool.getInstance().getConnection();
 
 			Set<Coupon> allCoupons = new HashSet<Coupon>();
 			allCoupons = getAllCoupons();
@@ -108,7 +108,6 @@ public class CouponDBDAO implements CouponDAO {
 					this.con = DriverManager.getConnection(Database.getDBUrl());
 
 					String sql = "DELETE FROM CUSTOMER_COUPON WHERE COUPON_ID=?";
-					System.out.println("//////////////////////**test1");
 					PreparedStatement pstm = this.con.prepareStatement(sql);
 					pstm.setLong(1, id);
 					pstm.executeUpdate();
@@ -134,13 +133,14 @@ public class CouponDBDAO implements CouponDAO {
 
 			throw new Exception("failed to remove coupon FROM CUSTOMER_COUPON");
 		} finally {
-			this.con.close();
+
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 	}
 
 	@Override
 	public void updateCoupon(Coupon coupon) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 
 		try {
 			String sql = "UPDATE Coupon SET endDate=?, price=?, amount=?, messege=?, image=? WHERE ID=?";
@@ -164,14 +164,14 @@ public class CouponDBDAO implements CouponDAO {
 
 			throw new Exception(e);
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 
 		}
 	}
 
 	@Override
 	public Coupon getCoupon(long id) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Coupon coupon = new Coupon();
 
 		try (Statement stm = this.con.createStatement()) {
@@ -197,7 +197,7 @@ public class CouponDBDAO implements CouponDAO {
 		} catch (SQLException e) {
 
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 
 		return coupon;
@@ -205,7 +205,7 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public Set<Coupon> getAllCoupons() throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 		Set<Coupon> set = new HashSet<Coupon>();
 
 		try {
@@ -232,14 +232,14 @@ public class CouponDBDAO implements CouponDAO {
 			System.out.println(e);
 			throw new Exception("cannot get Coupon data");
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return set;
 	}
 
 	@Override
 	public Set<Coupon> getCouponsByType(CouponType couponType) throws Exception {
-		this.con = DriverManager.getConnection(Database.getDBUrl());
+		this.con = ConnectionPool.getInstance().getConnection();
 
 		try {
 
@@ -265,7 +265,7 @@ public class CouponDBDAO implements CouponDAO {
 		} catch (SQLException e) {
 			throw new Exception(e);
 		} finally {
-			this.con.close();
+			ConnectionPool.getInstance().returnConnection(this.con);
 		}
 		return getCouponsByType(couponType);
 	}
