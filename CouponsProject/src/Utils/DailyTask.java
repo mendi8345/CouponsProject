@@ -1,8 +1,10 @@
 package Utils;
 
+import java.sql.Connection;
 import java.util.HashSet;
 import java.util.Set;
 
+import DB.ConnectionPool;
 import DBDAO.CouponDBDAO;
 import Facade.CompanyFacade;
 import JavaBeans.Company;
@@ -11,7 +13,8 @@ import JavaBeans.Coupon;
 public class DailyTask implements Runnable {
 	Company company;
 	private Thread thread;
-
+	ConnectionPool connectionPool;
+	Connection con;
 	private boolean isRunning = true;
 
 	CompanyFacade companyFacade = new CompanyFacade(this.company);
@@ -31,12 +34,16 @@ public class DailyTask implements Runnable {
 							|| this.coupon.getEndDate().before(DateUtils.GetCurrentDate())) {
 						System.out.println("Expired coupon deletion task was successful With Coupon " + c.getTitle());
 						this.couponDBDAO.removeCoupon(c);
-
 					}
-
 				}
-
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			try {
+				ConnectionPool.getInstance().closeAllConnections();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			stopTask();

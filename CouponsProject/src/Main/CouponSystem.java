@@ -1,5 +1,7 @@
 package Main;
 
+import java.sql.Connection;
+
 import DAO.CompanyDAO;
 import DAO.CouponDAO;
 import DAO.CustomerDAO;
@@ -13,15 +15,17 @@ import Facade.CustomerFacade;
 import JavaBeans.ClientType;
 import JavaBeans.Company;
 import JavaBeans.Customer;
+import Utils.DailyTask;
 
 public class CouponSystem {
 
 	private ConnectionPool connectionPool;
+	private Connection con;
 	private CompanyDAO companyDAO;
 	private CouponDAO couponDAO;
 	private CustomerDAO customerDAO;
 
-	// private DailyTask dailyTask = new DailyTask();
+	private DailyTask dailyTask = new DailyTask();
 	private static CouponSystem instance = new CouponSystem();
 
 	public static CouponSystem getInstance() {
@@ -32,7 +36,7 @@ public class CouponSystem {
 		try {
 			this.connectionPool = ConnectionPool.getInstance();
 
-			// this.dailyTask.start();
+			this.dailyTask.start();
 		} catch (Exception e) {
 
 		}

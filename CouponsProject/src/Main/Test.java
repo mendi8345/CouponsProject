@@ -113,7 +113,6 @@ public class Test {
 		// System.out.println(customer.getAllPurchasedCoupons()); // success
 		// System.out.println(customer2.getAllPurchasedCoupons()); // success
 		System.out.println();
-		dailyTask.start();
 	}
 
 }

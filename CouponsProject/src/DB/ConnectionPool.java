@@ -3,7 +3,6 @@ package DB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -49,22 +48,20 @@ public class ConnectionPool {
 	}
 
 	public synchronized void closeAllConnections() throws Exception {
+		Connection con;
+		int num = 0;
+		while (this.connections.peek() != null) {
+			con = this.connections.poll();
 
-		while (this.connections.size() == 0) {
 			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				System.out.println("Interrupted");
-			}
-		}
-		Iterator<Connection> iterator = this.connections.iterator();
-		while (iterator.hasNext()) {
-			System.out.println("222555555555555555555555555555555555");
-			try {
-				iterator.next().close();
+				con.close();
+				System.out.println("Closes connection number" + num++);
 			} catch (SQLException e) {
-				throw new Exception("Connections: Close All Connection: Error!");
+				throw new Exception(e);
 			}
 		}
+		System.out.println("All existing connections have been successfully closed");
+
 	}
+
 }
