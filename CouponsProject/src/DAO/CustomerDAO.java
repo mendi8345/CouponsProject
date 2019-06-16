@@ -1,5 +1,9 @@
 package DAO;
+
 import java.util.Set;
+
+import JavaBeans.Coupon;
+import JavaBeans.Customer;
 
 public interface CustomerDAO {
 

@@ -1,4 +1,5 @@
 package DBDAO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,7 +8,12 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
+import DAO.CompanyDAO;
+import DB.ConnectionPool;
 import Exceptions.CantConnectToDbException;
+import JavaBeans.Company;
+import JavaBeans.Coupon;
+import JavaBeans.CouponType;
 
 /**
  * @Author - Mendy&Tom

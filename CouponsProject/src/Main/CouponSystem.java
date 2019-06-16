@@ -1,4 +1,19 @@
 package Main;
+
+import DAO.CompanyDAO;
+import DAO.CouponDAO;
+import DAO.CustomerDAO;
+import DB.ConnectionPool;
+import DBDAO.CompanyDBDAO;
+import DBDAO.CustomerDBDAO;
+import Facade.AdminFacade;
+import Facade.CompanyFacade;
+import Facade.CouponClientFacade;
+import Facade.CustomerFacade;
+import JavaBeans.ClientType;
+import JavaBeans.Company;
+import JavaBeans.Customer;
+
 public class CouponSystem {
 
 	private ConnectionPool connectionPool;

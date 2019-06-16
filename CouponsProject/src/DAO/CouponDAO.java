@@ -2,6 +2,10 @@ package DAO;
 
 import java.util.Set;
 
+import JavaBeans.Company;
+import JavaBeans.Coupon;
+import JavaBeans.CouponType;
+
 public interface CouponDAO {
 
 	void insertCoupon(Company company, Coupon coupon) throws Exception;

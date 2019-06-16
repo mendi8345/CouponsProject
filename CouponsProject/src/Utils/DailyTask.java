@@ -1,6 +1,12 @@
 package Utils;
+
 import java.util.HashSet;
 import java.util.Set;
+
+import DBDAO.CouponDBDAO;
+import Facade.CompanyFacade;
+import JavaBeans.Company;
+import JavaBeans.Coupon;
 
 public class DailyTask implements Runnable {
 	Company company;

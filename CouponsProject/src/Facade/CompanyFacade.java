@@ -3,6 +3,15 @@ package Facade;
 import java.sql.Connection;
 import java.util.Set;
 
+import DAO.CompanyDAO;
+import DAO.CouponDAO;
+import DBDAO.CompanyDBDAO;
+import DBDAO.CouponDBDAO;
+import JavaBeans.ClientType;
+import JavaBeans.Company;
+import JavaBeans.Coupon;
+import JavaBeans.CouponType;
+
 public class CompanyFacade implements CouponClientFacade {
 
 	Connection con;

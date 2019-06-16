@@ -1,4 +1,17 @@
+package Facade;
+
 import java.util.Set;
+
+import DAO.CompanyDAO;
+import DAO.CouponDAO;
+import DAO.CustomerDAO;
+import DBDAO.CompanyDBDAO;
+import DBDAO.CouponDBDAO;
+import DBDAO.CustomerDBDAO;
+import JavaBeans.ClientType;
+import JavaBeans.Company;
+import JavaBeans.Coupon;
+import JavaBeans.Customer;
 
 public class AdminFacade implements CouponClientFacade {
 

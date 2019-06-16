@@ -1,5 +1,15 @@
 package Facade;
+
 import java.util.Set;
+
+import DAO.CouponDAO;
+import DAO.CustomerDAO;
+import DBDAO.CouponDBDAO;
+import DBDAO.CustomerDBDAO;
+import JavaBeans.ClientType;
+import JavaBeans.Coupon;
+import JavaBeans.CouponType;
+import JavaBeans.Customer;
 
 public class CustomerFacade implements CouponClientFacade {
 
