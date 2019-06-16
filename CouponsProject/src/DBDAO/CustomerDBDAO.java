@@ -29,9 +29,9 @@ public class CustomerDBDAO implements CustomerDAO {
 		for (Customer c : allCustomer) {
 			if (c.getCustName().equals(customer.getCustName())) {
 				customerExist = true;
-				System.out.println();
+
 				System.out.println("|----------Customer name already exist----------|");
-				System.out.println();
+
 				break;
 
 			}
@@ -93,6 +93,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			pstm1.setLong(1, customer.getId());
 			pstm1.executeUpdate();
 			this.con.commit();
+			System.out.println("remove Customer succeedes");
+
 		} catch (SQLException e) {
 			try {
 				this.con.rollback();
@@ -242,7 +244,7 @@ public class CustomerDBDAO implements CustomerDAO {
 				set.add(coupon);
 
 			}
-
+			System.out.println();
 			pstmt.close();
 		} catch (SQLException e) {
 			throw new Exception("unable to get CustCoupons data");
@@ -253,45 +255,44 @@ public class CustomerDBDAO implements CustomerDAO {
 
 	@Override
 	public void associateCouponToCustomer(Customer customer, Coupon coupon) throws Exception {
-		// boolean purchasedAlready = false;
-		// Set<Coupon> allCoupon = new HashSet<Coupon>();
-		// allCoupon = getCustCoupons(customer);
-		// for (Coupon c : allCoupon) {
-		// if (c.getTitle().equals(coupon.getTitle())) {
-		// purchasedAlready = true;
-		// System.out.println(" purchasedAlready =" + purchasedAlready);
-		// System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name
-		// already exist!");
-		// break;
-		//
-		// }
-		// }
-		// if (!purchasedAlready) {
-		try {
-			this.con = ConnectionPool.getInstance().getConnection();
-		} catch (Exception e1) {
-			throw new CantConnectToDbException();
+		boolean purchasedAlready = false;
+		Set<Coupon> allCoupon = new HashSet<Coupon>();
+		allCoupon = getCustCoupons(customer);
+		for (Coupon c : allCoupon) {
+			if (c.getTitle().equals(coupon.getTitle())) {
+				purchasedAlready = true;
+				System.out.println(" purchasedAlready =" + purchasedAlready);
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
+				break;
+
+			}
 		}
-		try {
-			String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
-			PreparedStatement pstmt = this.con.prepareStatement(sql);
-			pstmt.setLong(1, customer.getId());
-			pstmt.setLong(2, coupon.getId());
+		if (!purchasedAlready) {
+			try {
+				this.con = ConnectionPool.getInstance().getConnection();
+			} catch (Exception e1) {
+				throw new CantConnectToDbException();
+			}
+			try {
+				String sql = "INSERT INTO Customer_Coupon (CUST_ID, COUPON_ID) VALUES (?,?)";
+				PreparedStatement pstmt = this.con.prepareStatement(sql);
+				pstmt.setLong(1, customer.getId());
+				pstmt.setLong(2, coupon.getId());
 
-			pstmt.executeUpdate();
+				pstmt.executeUpdate();
 
-			pstmt.close();
-			coupon.setAmount(coupon.getAmount() + 100);
-			this.couponDBDAO.updateCoupon(coupon);
+				pstmt.close();
+				coupon.setAmount(coupon.getAmount() + 100);
+				this.couponDBDAO.updateCoupon(coupon);
 
-		} catch (SQLException e) {
-			e.getStackTrace();
-		} finally {
+			} catch (SQLException e) {
+				e.getStackTrace();
+			} finally {
 
-			ConnectionPool.getInstance().returnConnection(this.con);
+				ConnectionPool.getInstance().returnConnection(this.con);
 
+			}
 		}
-		// }
 
 	}
 

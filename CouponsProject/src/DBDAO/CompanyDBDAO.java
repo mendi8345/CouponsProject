@@ -94,7 +94,7 @@ public class CompanyDBDAO implements CompanyDAO {
 
 			pstm.executeUpdate();
 			pstm.close();
-			System.out.println("removeCompany succeedes");
+			System.out.println("remove Company succeedes");
 
 			this.con.commit();
 

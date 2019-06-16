@@ -36,7 +36,7 @@ public class CouponSystem {
 		try {
 			this.connectionPool = ConnectionPool.getInstance();
 
-			this.dailyTask.start();
+			// this.dailyTask.start();
 		} catch (Exception e) {
 
 		}

@@ -68,7 +68,6 @@ public class Test {
 		adminFacade.insertCustomer(customer1); // success
 		adminFacade.insertCustomer(customer2); // success
 		adminFacade.insertCustomer(customer3); // success
-
 		/**
 		 * @CompanyTest:
 		 */
@@ -110,9 +109,17 @@ public class Test {
 		System.out.println();
 		customerFacade1.purchaseCoupon(coupon1); // success
 		customerFacade2.purchaseCoupon(coupon2); // success
-		// System.out.println(customer.getAllPurchasedCoupons()); // success
+		// System.out.println( customerFacade1.getAllPurchasedCoupon()); // success
 		// System.out.println(customer2.getAllPurchasedCoupons()); // success
+
+		/**
+		 * Remove@Test:
+		 */
 		System.out.println();
+		System.out.println("// **  Remove@Test  **//");
+		System.out.println();
+		adminFacade.removeCompany(company1);
+		adminFacade.removeCustomer(customer1);
 	}
 
 }

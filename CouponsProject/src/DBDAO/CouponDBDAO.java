@@ -35,6 +35,7 @@ public class CouponDBDAO implements CouponDAO {
 			}
 		}
 		if (!couponExist) {
+			System.out.println("couponExist=" + couponExist);
 			try {
 				this.con = ConnectionPool.getInstance().getConnection();
 			} catch (Exception e1) {
@@ -134,6 +135,9 @@ public class CouponDBDAO implements CouponDAO {
 			pstmt2.setLong(1, coupon.getId());
 			pstmt2.executeUpdate();
 			pstmt2.close();
+			allCoupons.remove(coupon);
+			getAllCoupons().remove(coupon);
+			System.out.println("remove Coupon from all tablse succeedes");
 
 		} catch (SQLException e) {
 
@@ -178,37 +182,42 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public Coupon getCoupon(long id) throws Exception {
-		try {
-			this.con = ConnectionPool.getInstance().getConnection();
-		} catch (Exception e1) {
-			throw new CantConnectToDbException();
+		if (getAllCoupons() != null) {
+			try {
+				this.con = ConnectionPool.getInstance().getConnection();
+			} catch (Exception e1) {
+				throw new CantConnectToDbException();
+			}
+
+			Coupon coupon = new Coupon();
+			try (Statement stm = this.con.createStatement()) {
+				String sql = "SELECT * FROM Coupon WHERE ID=" + id;
+
+				ResultSet rs = stm.executeQuery(sql);
+				rs.next();
+				coupon.setId(rs.getLong(1));
+
+				coupon.setTitle(rs.getString(2));
+				coupon.setStartDate(rs.getDate(3));
+				coupon.setEndDate(rs.getDate(4));
+				coupon.setAmount(rs.getInt(5));
+				coupon.setMessege(rs.getString(6));
+				coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
+				coupon.setPrice(rs.getDouble(8));
+				coupon.setImage(rs.getString(9));
+
+			} catch (SQLException e) {
+				throw new Exception("cannot get Coupon data");
+
+			} finally {
+				ConnectionPool.getInstance().returnConnection(this.con);
+			}
+
+			return coupon;
+		} else {
+			System.out.println("The requested coupon does not exist in database");
 		}
-		Coupon coupon = new Coupon();
-
-		try (Statement stm = this.con.createStatement()) {
-			String sql = "SELECT * FROM Coupon WHERE ID=" + id;
-
-			ResultSet rs = stm.executeQuery(sql);
-			rs.next();
-			coupon.setId(rs.getLong(1));
-
-			coupon.setTitle(rs.getString(2));
-			coupon.setStartDate(rs.getDate(3));
-			coupon.setEndDate(rs.getDate(4));
-			coupon.setAmount(rs.getInt(5));
-			coupon.setMessege(rs.getString(6));
-			coupon.setCouponType(CouponType.valueOf(rs.getString("CouponType")));
-			coupon.setPrice(rs.getDouble(8));
-			coupon.setImage(rs.getString(9));
-
-		} catch (SQLException e) {
-			throw new Exception("cannot get Coupon data");
-
-		} finally {
-			ConnectionPool.getInstance().returnConnection(this.con);
-		}
-
-		return coupon;
+		return null;
 	}
 
 	@Override

@@ -39,7 +39,6 @@ public class CompanyFacade implements CouponClientFacade {
 
 	public void createCoupon(Coupon coupon) throws Exception {
 		this.couponDAO.insertCoupon(this.company, coupon);
-		System.out.println(this.company.getCompName() + " created " + coupon);
 
 	}
 

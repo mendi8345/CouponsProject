@@ -55,7 +55,7 @@ public class ConnectionPool {
 
 			try {
 				con.close();
-				System.out.println("Closes connection number" + num++);
+				System.out.println("Closes connection number " + num++);
 			} catch (SQLException e) {
 				throw new Exception(e);
 			}
