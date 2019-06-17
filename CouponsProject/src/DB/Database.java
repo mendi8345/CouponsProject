@@ -4,6 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * @Database
+ *
+ * 			Sets the required tables for the system.
+ * 
+ */
+
 public class Database {
 	private static Database instance = new Database();
 

@@ -261,11 +261,11 @@ public class CustomerDBDAO implements CustomerDAO {
 		for (Coupon c : allCoupon) {
 			if (c.getTitle().equals(coupon.getTitle())) {
 				purchasedAlready = true;
-				System.out.println(" purchasedAlready =" + purchasedAlready);
 				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
 				break;
 
 			}
+
 		}
 		if (!purchasedAlready) {
 			try {

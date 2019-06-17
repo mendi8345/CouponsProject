@@ -1,5 +1,11 @@
 package Exceptions;
 
+/**
+ *
+ * A method that reports an error in the connection
+ *
+ */
+
 public class CantConnectToDbException extends Exception {
 	private static String msg;
 

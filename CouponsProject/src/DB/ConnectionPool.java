@@ -8,6 +8,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import Utils.DateUtils;
 
+/**
+ * @Connectionpool Singleton that has limited numbers of connections that found
+ *                 in the connection queue. Contains the following methods:
+ *                 getConnection(); returnConnection(); closeConnection();
+ */
+
 public class ConnectionPool {
 
 	private static ConnectionPool instance;

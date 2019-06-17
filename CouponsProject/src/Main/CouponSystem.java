@@ -17,6 +17,11 @@ import JavaBeans.Company;
 import JavaBeans.Customer;
 import Utils.DailyTask;
 
+/**
+ * @CoponSystem starts when application load. checking the login success. if
+ *              login status true, gives the required permissions
+ */
+
 public class CouponSystem {
 
 	private ConnectionPool connectionPool;
@@ -36,7 +41,7 @@ public class CouponSystem {
 		try {
 			this.connectionPool = ConnectionPool.getInstance();
 
-			// this.dailyTask.start();
+			this.dailyTask.start();
 		} catch (Exception e) {
 
 		}
