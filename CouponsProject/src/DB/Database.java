@@ -112,7 +112,7 @@ public class Database {
 			Statement stmt4 = con.createStatement();
 
 			sqlCompany_Coupon = "create table Company_Coupon(" + "comp_id integer not null references Company(id), "
-					+ "coupon_id integer not null references Coupon(id))";
+					+ "coupon_id integer not null references Coupon(id), " + "primary key(comp_id, coupon_id))";
 			stmt4.executeUpdate(sqlCompany_Coupon);
 
 			System.out.println("success:" + sqlCompany_Coupon);
@@ -124,7 +124,7 @@ public class Database {
 			Statement stmt5 = con.createStatement();
 
 			sqlCustomer_Coupon = "create table Customer_Coupon(" + "cust_id integer not null references Customer(id),"
-					+ "coupon_id integer not null references Coupon(id))";
+					+ "coupon_id integer not null references Coupon(id), " + "primary key(cust_id, coupon_id))";
 
 			stmt5.executeUpdate(sqlCustomer_Coupon);
 

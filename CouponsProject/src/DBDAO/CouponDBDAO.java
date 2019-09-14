@@ -84,7 +84,7 @@ public class CouponDBDAO implements CouponDAO {
 				PreparedStatement pstmt4 = this.con.prepareStatement(sql4);
 				pstmt4.setLong(1, compId);
 				pstmt4.setLong(2, id);
-
+				System.out.println("kjjjjjjjjhhhhhhhhhhhhhh");
 				pstmt4.executeUpdate();
 
 				pstmt4.close();
@@ -182,6 +182,7 @@ public class CouponDBDAO implements CouponDAO {
 
 	@Override
 	public Coupon getCoupon(long id) throws Exception {
+
 		if (getAllCoupons() != null) {
 			try {
 				this.con = ConnectionPool.getInstance().getConnection();

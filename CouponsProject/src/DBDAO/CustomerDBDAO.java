@@ -11,6 +11,7 @@ import java.util.Set;
 import DAO.CustomerDAO;
 import DB.ConnectionPool;
 import Exceptions.CantConnectToDbException;
+import Exceptions.CoponNotAvilable;
 import JavaBeans.Coupon;
 import JavaBeans.CouponType;
 import JavaBeans.Customer;
@@ -258,11 +259,15 @@ public class CustomerDBDAO implements CustomerDAO {
 		boolean purchasedAlready = false;
 		Set<Coupon> allCoupon = new HashSet<Coupon>();
 		allCoupon = getCustCoupons(customer);
+		System.out.println("getCustCoupons+" + getCustCoupons(customer));
+
 		for (Coupon c : allCoupon) {
 			if (c.getTitle().equals(coupon.getTitle())) {
+
 				purchasedAlready = true;
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Company name already exist!");
-				break;
+
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Coupon name already exist!");
+				throw new CoponNotAvilable(coupon);
 
 			}
 
@@ -282,7 +287,7 @@ public class CustomerDBDAO implements CustomerDAO {
 				pstmt.executeUpdate();
 
 				pstmt.close();
-				coupon.setAmount(coupon.getAmount() + 100);
+				coupon.setAmount(coupon.getAmount() - 1);
 				this.couponDBDAO.updateCoupon(coupon);
 
 			} catch (SQLException e) {

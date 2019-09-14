@@ -6,6 +6,7 @@ import DAO.CouponDAO;
 import DAO.CustomerDAO;
 import DBDAO.CouponDBDAO;
 import DBDAO.CustomerDBDAO;
+import Exceptions.CoponNotAvilable;
 import JavaBeans.ClientType;
 import JavaBeans.Coupon;
 import JavaBeans.CouponType;
@@ -26,18 +27,18 @@ public class CustomerFacade implements CouponClientFacade {
 		if (this.couponDAO.getAllCoupons() != null) {
 
 			Coupon couponData = this.couponDAO.getCoupon(coupon.getId());
-
+			System.out.println(couponData.getAmount());
 			if (couponData == null) {
-				throw new Exception("Coupon does not exist");
+				throw new CoponNotAvilable(couponData);
 			}
-			if (couponData.getAmount() < 0) {
+			if (couponData.getAmount() <= 0) {
 
-				throw new Exception("Coupon does not available ");
+				throw new CoponNotAvilable(couponData);
 			}
-			// and not purchased already
-			// if (getAllPurchasedCoupon().contains(couponData)) {
-			// throw new Exception("Coupon already exist");
-			// }
+			// not purchased already
+			if (getAllPurchasedCoupon().contains(couponData)) {
+				throw new CoponNotAvilable(couponData);
+			}
 			// purchase
 			this.customerDAO.associateCouponToCustomer(this.customer, couponData);
 			System.out.println(this.customer.getCustName() + " purchase " + couponData);
